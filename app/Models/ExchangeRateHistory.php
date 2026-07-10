@@ -4,19 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ExchangeRate extends Model
+class ExchangeRateHistory extends Model
 {
-    protected $table = 'exchange_rates';
+    protected $table = 'exchange_rate_histories';
 
     protected $fillable = [
 
-        'currency_code',
-
         'base_currency',
 
-        'rate',
+        'currency_code',
 
-        'year'
+        'rate'
 
     ];
 

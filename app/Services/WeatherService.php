@@ -9,7 +9,7 @@ class WeatherService
     public function getCurrentWeather($latitude, $longitude)
     {
         try {
-            $response = Http::timeout(30)->get(
+            $response = Http::timeout(8)->get(
                 'https://api.open-meteo.com/v1/forecast',
                 [
                     'latitude' => $latitude,

@@ -48,9 +48,12 @@ width:60%;
             </tr>
 
             <tr>
-    <th style="background:rgba(15,23,42,0.85); color:#38bdf8;">Inflation Risk</th>
+    <td>
+        <strong style="background:rgba(15,23,42,0.85); color:#38bdf8;">Logistics Risk</strong>
+    </td>
+
     <td style="color:#67e8f9; font-weight:600;">
-        {{ $inflationRisk }}
+        {{ $logisticsRisk }}
     </td>
 </tr>
 

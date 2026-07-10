@@ -56,6 +56,8 @@ canvas{
 
 .futuristic-card:hover{
     transform: translateY(-3px);
+    box-shadow:
+    0 15px 40px rgba(56,189,248,.18);
 }
 
 /* Border warna per card */
@@ -176,6 +178,12 @@ canvas{
     background: rgba(15,23,42,0.85) !important;
     color: #38bdf8 !important;
 }
+
+.progress-bar{
+
+transition:width .8s ease;
+
+}
 </style>
 
 </head>
@@ -224,10 +232,22 @@ box-shadow:0 0 20px rgba(56,189,248,0.15);
     </a>
 </li>
             <li>
-    <a href="{{ route('ports.index') }}" class="nav-link text-white menu-link">
+    <a href="{{ route('ports.index') }}" 
+       class="nav-link text-white menu-link">
         🚢 Ports
     </a>
 </li>
+
+
+<li>
+    <a href="{{ route('ports.map') }}" 
+       class="nav-link text-white menu-link">
+
+        🗺 Port Monitoring
+
+    </a>
+</li>
+
             <a href="{{ route('comparison.index') }}" class="nav-link text-white menu-link">
     📊 Comparison
 </a>

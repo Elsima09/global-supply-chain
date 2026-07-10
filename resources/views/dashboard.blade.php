@@ -3,86 +3,361 @@
 @section('content')
 
 <div class="row g-4">
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <h3
+        class="fw-bold mb-0"
+        style="color:#38bdf8;">
+        📊 Global Risk Overview
+    </h3>
+
+    <div>
+
+        <button
+            id="refreshDashboard"
+            class="btn btn-outline-info me-2">
+
+            🔄 Refresh Dashboard
+
+        </button>
+
+        <form
+            action="{{ route('countries.sync') }}"
+            method="POST"
+            class="d-inline">
+
+            @csrf
+
+            <button
+                type="submit"
+                class="btn btn-success">
+
+                🌍 Sync Countries
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
     <div class="col-md-3">
         <div class="card futuristic-card border-blue">
-            <div class="card-body">
-                <h6>Total Countries</h6>
-                <small style="color:#94a3b8">Countries monitored</small>
-                <h2 class="counter"
-                    data-target="{{ $countryCount }}"
-                    style="color:#38bdf8; text-shadow:0 0 15px #38bdf8;">
-                    0
-                </h2>
-            </div>
+<div class="card-body">
+
+    <h6 class="mb-2">
+        🌍 Total Countries
+    </h6>
+
+    <small class="text-secondary">
+        Countries monitored
+    </small>
+
+    <h1
+id="countryCount"
+class="counter mt-3"
+    data-target="{{ $countryCount }}"
+    style="
+    color:#38bdf8;
+    text-shadow:0 0 15px #38bdf8;
+    letter-spacing:1px;
+font-weight:700;">
+
+        0
+
+    </h1>
+
+</div>
         </div>
     </div>
 
     <div class="col-md-3">
         <div class="card futuristic-card border-red">
-            <div class="card-body">
-                <h6>High Risk Countries</h6>
-                <small style="color:#94a3b8">Critical countries</small>
-                <h2 class="counter"
-                    data-target="{{ $highRiskCount }}"
-                    style="color:#ef4444; text-shadow:0 0 15px #ef4444;">
-                    0
-                </h2>
-            </div>
+<div class="card-body">
+
+    <h6 class="mb-2">
+        🚨 High Risk
+    </h6>
+
+    <small class="text-secondary">
+        Critical countries
+    </small>
+
+    <h1
+    id="highRiskCount"
+    class="counter mt-3"
+    data-target="{{ $highRiskCount }}"
+    style="
+    color:#ef4444;
+    text-shadow:0 0 15px #ef4444;
+    letter-spacing:1px;
+font-weight:700;">
+
+        0
+
+    </h1>
+
+</div>
         </div>
     </div>
 
     <div class="col-md-3">
         <div class="card futuristic-card border-green">
-            <div class="card-body">
-                <h6>Active Ports</h6>
-                <small style="color:#94a3b8">Ports operating</small>
-                <h2 class="counter"
-                    data-target="{{ $portCount }}"
-                    style="color:#22c55e; text-shadow:0 0 15px #22c55e;">
-                    0
-                </h2>
-            </div>
+<div class="card-body">
+
+    <h6 class="mb-2">
+        🚢 Active Ports
+    </h6>
+
+    <small class="text-secondary">
+        Ports operating
+    </small>
+
+    <h1
+    id="portCount"
+    class="counter mt-3"
+    data-target="{{ $portCount }}"
+    style="
+    color:#22c55e;
+    text-shadow:0 0 15px #22c55e;
+    letter-spacing:1px;
+font-weight:700;">
+
+        0
+
+    </h1>
+
+</div>
         </div>
     </div>
 
     <div class="col-md-3">
         <div class="card futuristic-card border-yellow">
-            <div class="card-body">
-                <h6>News Alerts</h6>
-                <small style="color:#94a3b8">Latest alerts today</small>
-                <h2 class="counter"
-                    data-target="{{ $newsCount }}"
-                    style="color:#facc15; text-shadow:0 0 15px #facc15;">
-                    0
-                </h2>
-            </div>
+<div class="card-body">
+
+    <h6 class="mb-2">
+        📰 News Alerts
+    </h6>
+
+    <small class="text-secondary">
+        Latest alerts today
+    </small>
+
+    <h1
+    id="newsCount"
+    class="counter mt-3"
+    data-target="{{ $newsCount }}"
+    style="
+    color:#facc15;
+    text-shadow:0 0 15px #facc15;
+    letter-spacing:1px;
+font-weight:700;">
+
+        0
+
+    </h1>
+
+</div>
         </div>
     </div>
 </div>
-<div class="row g-4 mt-1">
-    <div class="col-md-3">
-        <div class="card futuristic-card border-0">
+<div class="row g-4 mt-4">
+
+    @php
+        $weatherScore = round($riskScores->avg('weather_score') ?? 0);
+    @endphp
+
+    <!-- Weather -->
+    <div class="col-md-4">
+        <div class="card futuristic-card border-info h-100">
             <div class="card-body">
-                <h6>Weather Risk</h6>
-                @if(round($riskScores->avg('weather_score')) >= 70)
-    <h3 class="text-danger">High</h3>
-@elseif(round($riskScores->avg('weather_score')) >= 40)
-    <h3 class="text-warning">Medium</h3>
-@else
-    <h3 class="text-success">Low</h3>
-@endif
+
+                <h5>🌦 Weather Risk</h5>
+
+                <h2 class="mt-3
+                    @if($weatherScore>=70)
+                        text-danger
+                    @elseif($weatherScore>=40)
+                        text-warning
+                    @else
+                        text-success
+                    @endif">
+
+                    @if($weatherScore>=70)
+                        HIGH
+                    @elseif($weatherScore>=40)
+                        MEDIUM
+                    @else
+                        LOW
+                    @endif
+
+                </h2>
+
+                <p class="text-secondary mb-2">
+                    Average Score : {{ $weatherScore }}
+                </p>
+
+                <div class="progress" style="height:10px">
+
+                    <div
+                        class="progress-bar
+                        @if($weatherScore>=70)
+                            bg-danger
+                        @elseif($weatherScore>=40)
+                            bg-warning
+                        @else
+                            bg-success
+                        @endif"
+                        style="width:{{ $weatherScore }}%">
+                    </div>
+
+                </div>
+
             </div>
         </div>
+    </div>
+    
+
+    <!-- Medium -->
+    <div class="col-md-4">
+        <div class="card futuristic-card border-warning h-100">
+            <div class="card-body">
+
+                <h5>🟡 Medium Risk</h5>
+
+                <h1 class="text-warning mt-3">
+                    {{ $mediumRiskCount }}
+                </h1>
+
+                <p class="text-secondary">
+                    Countries currently under monitoring
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Low -->
+    <div class="col-md-4">
+        <div class="card futuristic-card border-success h-100">
+            <div class="card-body">
+
+                <h5>🟢 Low Risk</h5>
+
+                <h1 class="text-success mt-3">
+                    {{ $lowRiskCount }}
+                </h1>
+
+                <p class="text-secondary">
+                    Countries with stable supply chain
+                </p>
+
+            </div>
+        </div>
+    </div>
+    </div> 
+
+    <div class="card futuristic-card border-0 mt-4">
+    <div class="card-body">
+        <h4>Country Risk Overview</h4>
+        <canvas id="riskChart" height="100"></canvas>
     </div>
 </div>
 
 <div class="card futuristic-card border-0 mt-4">
+    <div class="card-body">
+        <h4>Global Ports Map</h4>
 
+        <div id="map" style="height:500px;"></div>
+    </div>
+</div>
+
+<div class="card futuristic-card border-0 mt-4">
     <div class="card-body">
 
-        <h4>Risk Trend</h4>
+        <h4>AI Recommendation</h4>
 
-        <canvas id="trendChart"></canvas>
+        <div style="
+background:rgba(34,211,238,0.12);
+border:1px solid rgba(34,211,238,0.3);
+color:#67e8f9;
+padding:20px;
+border-radius:14px;
+">
+            <h5>
+    {{ $recommendation['status'] }}
+</h5>
+
+<p>
+    {{ $recommendation['message'] }}
+</p>
+
+<hr>
+
+<ul>
+@foreach($recommendation['actions'] as $action)
+
+<li>
+    {{ $action }}
+</li>
+
+@endforeach
+</ul>
+        </div>
+
+    </div>
+</div>
+
+@php
+$topRisk = $riskScores->sortByDesc('total_score')->first();
+@endphp
+
+<div class="row g-4 mt-4">
+
+    <div class="col-md-6">
+
+        {{-- Highest Risk Country --}}
+
+        <div class="card futuristic-card border-0">
+    <div class="card-body">
+
+        <h4>🌍 Highest Risk Country</h4>
+
+        @if($topRisk)
+            <h2 class="text-danger">
+                {{ optional($topRisk->country)->name }}
+            </h2>
+
+            <p>
+                Risk Score : {{ $topRisk->total_score }}
+            </p>
+
+            <span class="badge bg-danger">
+                {{ $topRisk->risk_level }}
+            </span>
+        @endif
+
+    </div>
+</div>
+
+    </div>
+
+    <div class="col-md-6">
+
+        {{-- Last API Refresh --}}
+
+        <div class="card futuristic-card border-0">
+    <div class="card-body">
+
+        <h4>🕒 Last API Refresh</h4>
+
+        <h5 class="text-info">
+            {{ optional($riskScores->sortByDesc('updated_at')->first())->updated_at?->format('d M Y H:i') ?? '-' }}
+        </h5>
+
+    </div>
+</div>
 
     </div>
 
@@ -104,7 +379,7 @@
 
             <tbody>
 
-            @foreach($riskScores as $risk)
+            @foreach($topRiskScores as $risk)
 
                 <tr>
 
@@ -145,31 +420,6 @@
     <div class="card-body">
         <h4>Welcome to Supply Chain AI Dashboard</h4>
         <p>Monitor weather, economy, logistics, ports, and global risk.</p>
-    </div>
-</div>
-
-<div class="card futuristic-card border-0 mt-4">
-    <div class="card-body">
-
-        <h4>AI Recommendation</h4>
-
-        <div style="
-background:rgba(34,211,238,0.12);
-border:1px solid rgba(34,211,238,0.3);
-color:#67e8f9;
-padding:20px;
-border-radius:14px;
-">
-            {{ $recommendation }}
-        </div>
-
-    </div>
-</div>
-
-<div class="card futuristic-card border-0 mt-4">
-    <div class="card-body">
-        <h4>Country Risk Overview</h4>
-        <canvas id="riskChart" height="100"></canvas>
     </div>
 </div>
 
@@ -226,14 +476,6 @@ box-shadow:0 0 20px rgba(34,197,94,0.15);
 </div>
 @endif
 
-<div class="card futuristic-card border-0 mt-4">
-    <div class="card-body">
-        <h4>Global Ports Map</h4>
-
-        <div id="map" style="height:500px;"></div>
-    </div>
-</div>
-
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -246,7 +488,7 @@ document.addEventListener('DOMContentLoaded', function () {
     data: {
         labels: [
 @foreach($riskScores as $risk)
-'{{ $risk->country->name }}',
+'{{ optional($risk->country)->name }}',
 @endforeach
         ],
         datasets: [{
@@ -289,61 +531,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 });
-    const trendCtx = document.getElementById('trendChart');
-
-new Chart(trendCtx, {
-    type: 'line',
-    data: {
-        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-        datasets: [{
-    label: 'Global Risk',
-    borderColor:'#38bdf8',
-    backgroundColor:'rgba(56,189,248,0.2)',
-    pointBackgroundColor:'#38bdf8',
-    tension:0.4,
-            data: [
-                {{ round($riskScores->avg('total_score')) - 8 }},
-                {{ round($riskScores->avg('total_score')) - 4 }},
-                {{ round($riskScores->avg('total_score')) - 2 }},
-                {{ round($riskScores->avg('total_score')) }},
-                {{ round($riskScores->avg('total_score')) + 3 }},
-                {{ round($riskScores->avg('total_score')) - 1 }},
-                {{ round($riskScores->avg('total_score')) }}
-            ],
-            borderWidth: 3,
-            fill: false
-        }]
-    },
-    options: {
-        plugins: {
-            legend: {
-                labels: {
-                    color: 'white'
-                }
-            }
-        },
-        scales: {
-            x: {
-                ticks: {
-                    color: 'white'
-                },
-                grid: {
-                    color: 'rgba(255,255,255,0.08)'
-                }
-            },
-            y: {
-                ticks: {
-                    color: 'white'
-                },
-                grid: {
-                    color: 'rgba(255,255,255,0.08)'
-                }
-            }
-        }
-    }
 });
-});
-</script>
+    </script>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
@@ -356,13 +545,66 @@ document.addEventListener("DOMContentLoaded", function () {
         attribution:'© OpenStreetMap'
     }).addTo(map);
 
-    @foreach($ports as $port)
-L.marker([{{ $port->latitude }}, {{ $port->longitude }}])
-    .addTo(map)
-    .bindPopup("{{ $port->port_name }}");
+@foreach($ports as $port)
+
+L.marker([
+    {{ $port->latitude }},
+    {{ $port->longitude }}
+])
+
+.addTo(map)
+
+.bindPopup(`
+<b>🚢 {{ $port->port_name }}</b><br>
+
+Country : {{ $port->country }}<br>
+
+Status : {{ $port->status }}<br>
+
+Delay : {{ $port->delay_hours }} Hours
+
+`);
+
 @endforeach
 
 });
+</script>
+<script>
+
+document.getElementById('refreshDashboard').addEventListener('click', function(){
+
+    fetch("{{ route('dashboard.refresh') }}")
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        document.getElementById('countryCount').innerText =
+            data.countryCount;
+
+        document.getElementById('highRiskCount').innerText =
+            data.highRiskCount;
+
+        document.getElementById('portCount').innerText =
+            data.portCount;
+
+        document.getElementById('newsCount').innerText =
+            data.newsCount;
+
+        alert("✅ Dashboard berhasil diperbarui!");
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert("❌ Gagal mengambil data.");
+
+    });
+
+});
+
 </script>
 
 @endsection

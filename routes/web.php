@@ -16,6 +16,7 @@ use App\Http\Controllers\AdminPortController;
 use App\Http\Controllers\AdminArticleController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminCountryController;
+use App\Services\LogisticsRiskService;
 
 Route::get('/', function () {
     return view('welcome');
@@ -27,12 +28,14 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth'])
     ->name('dashboard');
 
+Route::get('/dashboard/refresh', [DashboardController::class, 'refresh'])
+    ->name('dashboard.refresh');
+
 Route::get('/countries', [CountryController::class, 'index'])
     ->middleware(['auth'])
     ->name('countries.index');
 
-Route::get('/weather', [WeatherController::class,'index'])
-    ->middleware(['auth'])
+Route::get('/weather', [WeatherController::class, 'index'])
     ->name('weather.index');
 
 Route::get('/currency', [CurrencyController::class, 'index'])
@@ -132,6 +135,40 @@ Route::delete('/admin/users/{user}', [AdminUserController::class, 'destroy'])
 Route::get('/admin/countries', [AdminCountryController::class, 'index'])
     ->middleware('auth')
     ->name('admin.countries');
+
+Route::get('/admin/countries/create', [AdminCountryController::class, 'create'])
+    ->middleware('auth')
+    ->name('admin.countries.create');
+
+Route::post('/admin/countries', [AdminCountryController::class, 'store'])
+    ->middleware('auth')
+    ->name('admin.countries.store');
+
+Route::get('/admin/countries/{country}/edit', [AdminCountryController::class, 'edit'])
+    ->middleware('auth')
+    ->name('admin.countries.edit');
+
+Route::put('/admin/countries/{country}', [AdminCountryController::class, 'update'])
+    ->middleware('auth')
+    ->name('admin.countries.update');
+
+Route::delete('/admin/countries/{country}', [AdminCountryController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('admin.countries.destroy');
+
+Route::post('/countries/sync', [CountryController::class, 'sync'])
+    ->name('countries.sync');
+
+Route::get('/test-logistics', function(LogisticsRiskService $service){
+
+    return $service->calculate();
+
+});
+
+Route::get('/ports/map', 
+    [PortController::class,'map']
+)
+->name('ports.map');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

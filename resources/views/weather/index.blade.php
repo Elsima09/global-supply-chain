@@ -2,82 +2,364 @@
 
 @section('content')
 
+@php
+    $rain = $weather['current']['rain'] ?? 0;
+    $wind = $weather['current']['wind_speed_10m'] ?? 0;
+    $temp = $weather['current']['temperature_2m'] ?? 0;
+@endphp
+
 <div class="card futuristic-card border-0">
 
     <div class="card-body">
 
-        <h2 class="mb-4" style="color:#38bdf8; text-shadow:0 0 12px #38bdf8;">
-    Weather Monitoring
-</h2>
+        <h2 class="mb-4"
+            style="color:#38bdf8;text-shadow:0 0 12px #38bdf8;">
+            🌦 Weather Monitoring
+        </h2>
 
-        <table class="table table-bordered futuristic-table">
+        {{-- Country --}}
+        <form method="GET"
+              action="{{ route('weather.index') }}"
+              class="mb-4">
 
-            <thead>
+            <div class="row">
 
-                <tr>
-                    <th>Country</th>
-                    <th>Temperature</th>
-                    <th>Rainfall</th>
-                    <th>Wind</th>
-                    <th>Status</th>
-                </tr>
+                <div class="col-md-10">
 
-            </thead>
+                    <select
+                        name="country"
+                        class="form-select">
 
-            <tbody>
+                        @foreach($countries as $country)
 
-@foreach($weatherData as $item)
+                            <option
+                                value="{{ $country->id }}"
+                                {{ $selectedCountry->id == $country->id ? 'selected' : '' }}>
 
-<tr>
+                                {{ $country->name }}
 
-<td>{{ $item['country'] }}</td>
+                            </option>
 
-<td>{{ $item['temperature'] }} °C</td>
+                        @endforeach
 
-<td>{{ $item['rainfall'] }} mm</td>
+                    </select>
 
-<td>{{ $item['wind'] }} km/h</td>
+                </div>
 
-<td>
+                <div class="col-md-2">
 
-@if($item['temperature']>30)
+                    <button class="btn btn-info w-100">
 
-<span style="
-background:rgba(245,158,11,0.2);
-color:#facc15;
-padding:6px 12px;
-border-radius:999px;
-border:1px solid rgba(245,158,11,0.4);
-">
-Hot
-</span>
+                        Load Weather
 
-@else
+                    </button>
 
-<span style="
-background:rgba(34,197,94,0.15);
-color:#86efac;
-padding:6px 12px;
-border-radius:999px;
-border:1px solid rgba(34,197,94,0.35);
-">
-Normal
-</span>
+                </div>
 
-@endif
+            </div>
 
-</td>
+        </form>
 
-</tr>
+        {{-- WEATHER TABLE --}}
 
-@endforeach
+        <div class="table-responsive">
 
-</tbody>
+            <table class="table table-bordered futuristic-table align-middle">
 
-        </table>
+                <thead>
+
+                    <tr>
+
+                        <th>Country</th>
+                        <th>Temperature</th>
+                        <th>Rainfall</th>
+                        <th>Wind</th>
+                        <th>Status</th>
+                        <th>Rain Status</th>
+                        <th>Wind Status</th>
+                        <th>Storm Risk</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+
+                        <td>
+
+                            {{ $selectedCountry->name }}
+
+                        </td>
+
+                        <td>
+
+                            🌡 {{ $temp }} °C
+
+                        </td>
+
+                        <td>
+
+                            🌧 {{ $rain }} mm
+
+                        </td>
+
+                        <td>
+
+                            💨 {{ $wind }} km/h
+
+                        </td>
+
+                        <td>
+
+                            @if($temp > 30)
+
+                                <span class="badge bg-warning">
+
+                                    Hot
+
+                                </span>
+
+                            @else
+
+                                <span class="badge bg-success">
+
+                                    Normal
+
+                                </span>
+
+                            @endif
+
+                        </td>
+
+                        <td>
+
+                            @if($rain >= 20)
+
+                                <span class="badge bg-danger">
+
+                                    Heavy Rain
+
+                                </span>
+
+                            @elseif($rain >= 5)
+
+                                <span class="badge bg-warning text-dark">
+
+                                    Light Rain
+
+                                </span>
+
+                            @else
+
+                                <span class="badge bg-success">
+
+                                    No Rain
+
+                                </span>
+
+                            @endif
+
+                        </td>
+
+                        <td>
+
+                            @if($wind >= 50)
+
+                                <span class="badge bg-danger">
+
+                                    Strong Wind
+
+                                </span>
+
+                            @elseif($wind >= 25)
+
+                                <span class="badge bg-warning text-dark">
+
+                                    Moderate
+
+                                </span>
+
+                            @else
+
+                                <span class="badge bg-success">
+
+                                    Normal
+
+                                </span>
+
+                            @endif
+
+                        </td>
+
+                        <td>
+
+                            @if($rain >= 20 && $wind >= 50)
+
+                                <span class="badge bg-danger">
+
+                                    HIGH
+
+                                </span>
+
+                            @elseif($rain >= 5 || $wind >= 25)
+
+                                <span class="badge bg-warning text-dark">
+
+                                    MEDIUM
+
+                                </span>
+
+                            @else
+
+                                <span class="badge bg-success">
+
+                                    LOW
+
+                                </span>
+
+                            @endif
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
 
     </div>
 
 </div>
+
+{{-- ========================= --}}
+{{-- GLOBAL WEATHER MAP --}}
+{{-- ========================= --}}
+
+<div class="card futuristic-card mt-4">
+
+    <div class="card-body">
+
+        <h4 class="text-info fw-bold mb-3">
+
+            🗺 Global Weather Monitoring
+
+        </h4>
+
+        <div id="weatherMap"
+             style="height:500px;border-radius:15px;">
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet"
+      href="https://unpkg.com/leaflet/dist/leaflet.css">
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded",function(){
+
+    const map = L.map('weatherMap').setView(
+        [
+            {{ $selectedCountry->latitude }},
+            {{ $selectedCountry->longitude }}
+        ],
+        5
+    );
+
+    L.tileLayer(
+
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+
+        {
+
+            attribution:'© OpenStreetMap'
+
+        }
+
+    ).addTo(map);
+
+    let color = "green";
+
+    if({{ $rain }} >= 20 && {{ $wind }} >= 50){
+
+        color = "red";
+
+    }
+    else if({{ $rain }} >= 5 || {{ $wind }} >= 25){
+
+        color = "orange";
+
+    }
+
+    const icon = L.divIcon({
+
+        className:'',
+
+        html:`
+        <div
+        style="
+            width:18px;
+            height:18px;
+            background:${color};
+            border-radius:50%;
+            border:3px solid white;
+            box-shadow:0 0 12px ${color};
+        ">
+        </div>
+        `
+
+    });
+
+    L.marker(
+
+        [
+            {{ $selectedCountry->latitude }},
+            {{ $selectedCountry->longitude }}
+        ],
+
+        {
+
+            icon:icon
+
+        }
+
+    )
+
+    .addTo(map)
+
+    .bindPopup(`
+
+        <b>{{ $selectedCountry->name }}</b>
+
+        <br>
+
+        🌡 Temperature :
+        {{ $temp }} °C
+
+        <br>
+
+        🌧 Rain :
+        {{ $rain }} mm
+
+        <br>
+
+        💨 Wind :
+        {{ $wind }} km/h
+
+    `)
+
+    .openPopup();
+
+});
+
+</script>
 
 @endsection

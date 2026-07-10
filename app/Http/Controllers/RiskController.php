@@ -32,12 +32,21 @@ class RiskController extends Controller
     $firstRisk = RiskScore::first();
 
     return view('risk.index', [
-        'weatherRisk'   => $firstRisk->weather_score ?? 0,
-        'inflationRisk' => $firstRisk->inflation_score ?? 0,
-        'currencyRisk'  => $firstRisk->currency_score ?? 0,
-        'newsRisk'      => $firstRisk->news_score ?? 0,
-        'riskScore'     => $firstRisk->total_score ?? 0,
-        'riskLevel'     => $firstRisk->risk_level ?? 'Low'
-    ]);
+
+    'weatherRisk'   => $firstRisk->weather_score ?? 0,
+
+    'inflationRisk' => $firstRisk->inflation_score ?? 0,
+
+    'currencyRisk'  => $firstRisk->currency_score ?? 0,
+
+    'newsRisk'      => $firstRisk->news_score ?? 0,
+
+    'logisticsRisk' => $firstRisk->logistics_score ?? 0,
+
+    'riskScore'     => $firstRisk->total_score ?? 0,
+
+    'riskLevel'     => $firstRisk->risk_level ?? 'Low'
+
+]);
 }
 }
