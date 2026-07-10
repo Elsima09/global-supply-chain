@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: global-supply-chain
+    runtime: docker
+
+    plan: free
+
+    dockerfilePath: ./Dockerfile
+
+    autoDeploy: true
