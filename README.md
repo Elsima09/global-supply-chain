@@ -1,58 +1,492 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🌍 Global Supply Chain AI Dashboard
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> AI-Based Global Supply Chain Risk Intelligence System using Laravel
 
-## About Laravel
+![Laravel](https://img.shields.io/badge/Laravel-13-red)
+![PHP](https://img.shields.io/badge/PHP-8.3-blue)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5-purple)
+![ChartJS](https://img.shields.io/badge/Chart.js-4-orange)
+![Leaflet](https://img.shields.io/badge/Leaflet-Interactive-green)
+![License](https://img.shields.io/badge/license-MIT-success)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+# 📖 Overview
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Global Supply Chain AI Dashboard merupakan sistem monitoring rantai pasok global yang dibangun menggunakan Laravel.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Sistem ini membantu perusahaan importir maupun eksportir dalam memonitor kondisi perdagangan internasional secara real-time menggunakan berbagai sumber data eksternal seperti:
 
-## Learning Laravel
+- Weather API
+- Currency API
+- World Bank API
+- News API
+- OpenStreetMap
+- REST Countries API
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Selain monitoring, sistem juga melakukan analisis risiko menggunakan algoritma AI sederhana (Rule-Based & Weighted Risk Model) tanpa menggunakan layanan AI berbayar.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+# 🚀 Main Features
 
-## Agentic Development
+## 🌍 Country Monitoring
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+- 244 Countries
+- Country Detail
+- GDP
+- Inflation
+- Currency
+- Weather
+- Economic Status
+- AI Recommendation
 
-```bash
-composer require laravel/boost --dev
 
-php artisan boost:install
-```
+## 🌦 Weather Monitoring
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Realtime Weather
 
-## Contributing
+- Temperature
+- Rainfall
+- Wind Speed
+- Storm Risk
+- Weather History
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Code of Conduct
+## 💱 Currency Monitoring
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- Currency Exchange
+- Exchange Rate History
+- Highest Currency
+- Lowest Currency
+- Average Currency
+- Currency Trend
+- Top 10 Exchange Rate
+- Currency by Region
+- Search Currency
 
-## Security Vulnerabilities
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 📰 Global News
 
-## License
+Realtime News
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- News Cache
+- News Category
+- News Source
+- News Sentiment
+- AI Sentiment Analysis
+
+
+## 🧠 Sentiment Analysis
+
+Lexicon Based Sentiment Analysis
+
+Positive Dictionary
+
+growth
+increase
+profit
+stable
+improve
+
+
+Negative Dictionary
+
+war
+crisis
+inflation
+delay
+disaster
+
+
+Output
+
+Positive
+
+Neutral
+
+Negative
+
+
+
+## ⚠ Supply Chain Risk Prediction
+
+Weighted Risk Model
+
+
+Weather Risk
+
+Inflation Risk
+
+Currency Risk
+
+Political Risk
+
+Transport Risk
+
+Economic Risk
+
+News Risk
+
+
+Output
+
+
+Risk Score
+
+Low
+
+Medium
+
+High
+
+
+
+## 🚢 Port Monitoring
+
+- Port Capacity
+- Congestion
+- Delay
+- Transport Risk
+- Historical Trend
+- AI Prediction
+
+
+## 🤖 AI Recommendation Engine
+
+Generate recommendation based on:
+
+- Risk Level
+- Weather
+- Economy
+- Currency
+- Transport
+
+Example
+
+
+Monitor shipment.
+
+Prepare alternative logistics route.
+
+Increase safety stock.
+
+Avoid high risk country.
+
+
+
+## 📊 Dashboard Analytics
+
+Charts
+
+- GDP Trend
+- Inflation Trend
+- Currency Trend
+- Risk Trend
+- Transport History
+- Risk Comparison
+
+
+## 🗺 Interactive Map
+
+Leaflet Map
+
+- Country Marker
+- Port Marker
+- Country Detail
+- OpenStreetMap
+
+
+## ⭐ Watchlist
+
+Save favorite countries
+
+
+## 📈 Comparison
+
+Compare multiple countries
+
+- GDP
+- Inflation
+- Currency
+- Weather
+- Risk
+
+
+# 🧠 AI Modules
+
+Project menggunakan AI sederhana tanpa layanan AI berbayar.
+
+### Lexicon Based Sentiment Analysis
+
+Positive Words
+
+Negative Words
+
+### Recommendation Engine
+
+Rule Based Recommendation
+
+### Weighted Risk Model
+
+Weather
+
+Inflation
+
+Currency
+
+Political News
+
+Transport
+
+GDP
+
+Population
+
+# 🛠 Tech Stack
+
+Backend
+
+- Laravel 13
+- PHP 8.3
+- MySQL
+
+Frontend
+
+- Bootstrap 5
+- Chart.js
+- Leaflet.js
+- FontAwesome
+
+Database
+
+- MySQL
+
+
+# 🌐 External APIs
+
+| API | Function |
+|------|----------|
+| Open Meteo API | Weather |
+| World Bank API | GDP |
+| Exchange Rate API | Currency |
+| News API | News |
+| REST Countries API | Country Data |
+| OpenStreetMap | Map |
+| Leaflet | Interactive Map |
+
+
+# 📂 Database Tables
+
+Main Tables
+
+users
+
+countries
+
+ports
+
+password_reset_tokens
+
+weather_data
+
+currencies
+
+economic_data
+
+exchange_rate
+
+exchange_rate_histories
+
+risk_scores
+
+risk_histories
+
+migrations
+
+articles
+
+watchlists
+
+positive_words
+
+negative_words
+
+news_cache
+
+sentiment_results
+
+sessions
+
+transport_histories
+
+notifications
+
+
+# REST API
+
+GET /api/countries
+
+GET /api/weather
+
+GET /api/currency
+
+GET /api/news
+
+GET /api/risk
+
+GET /api/ports
+
+
+# 📷 Dashboard Modules
+
+✔ Dashboard
+
+✔ Countries
+
+✔ Weather
+
+✔ Currency
+
+✔ News
+
+✔ Ports
+
+✔ Port Monitoring
+
+✔ Comparison
+
+✔ Watchlist
+
+✔ Sentiment
+
+✔ Risk Score
+
+✔ Admin
+
+
+# Installation
+
+Clone repository
+
+bash
+git clone https://github.com/Elsima09/global-supply-chain.git
+
+
+Masuk folder
+
+bash
+cd global-supply-chain
+
+
+Install dependency
+
+bash
+composer install
+
+
+Install Node
+
+bash
+npm install
+
+
+Copy env
+
+bash
+cp .env.example .env
+`
+
+Generate key
+
+bash
+php artisan key:generate
+
+
+Migration
+
+bash
+php artisan migrate
+
+
+Seeder
+
+bash
+php artisan db:seed
+
+
+Run
+
+bash
+php artisan serve
+
+
+Frontend
+
+bash
+npm run dev
+
+
+# Folder Structure
+
+
+app/
+
+Models/
+
+Controllers/
+
+Services/
+
+resources/
+
+views/
+
+public/
+
+routes/
+
+database/
+
+
+
+# AI Workflow
+
+External API
+
+↓
+
+Fetch Data
+
+↓
+
+Database
+
+↓
+
+Risk Calculation
+
+↓
+
+Sentiment Analysis
+
+↓
+
+Recommendation Engine
+
+↓
+
+Dashboard Visualization
+
+
+
+# Author
+
+Elsimawati Berutu
+Information Systems
+
+Global Supply Chain AI Dashboard
+
+2026
+
+
+# License
+
+MIT License
