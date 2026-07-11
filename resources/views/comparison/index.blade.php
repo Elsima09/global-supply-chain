@@ -265,7 +265,7 @@ new Chart(currencyCtx, {
     data: {
         labels: [
 @foreach($currencyTrend as $item)
-'{{ $item->year }}',
+'{{ \Carbon\Carbon::parse($item->created_at)->format("Y") }}',
 @endforeach
         ],
         datasets: [{
