@@ -3,18 +3,17 @@ import laravel from 'laravel-vite-plugin';
 
 export default defineConfig({
 
-    build:{
-        manifest:true,
+    build: {
+        manifest: 'manifest.json',
     },
 
-    plugins:[
+    plugins: [
         laravel({
-            input:[
+            input: [
                 'resources/css/app.css',
                 'resources/js/app.js'
             ],
-            refresh:true,
+            refresh: true,
         }),
     ],
-
 });
