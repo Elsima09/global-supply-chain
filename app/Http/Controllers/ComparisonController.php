@@ -14,8 +14,8 @@ class ComparisonController extends Controller
     $comparison = RiskScore::with('country')->get();
 
     $gdpTrend = EconomicData::where('country_id', 1)
-        ->orderBy('year')
-        ->get();
+    ->orderBy('created_at')
+    ->get();
     $currencyTrend = ExchangeRate::where('currency_code', 'IDR')
     ->whereNotNull('year')
     ->orderBy('year')

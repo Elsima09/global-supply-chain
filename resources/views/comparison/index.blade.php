@@ -180,11 +180,9 @@ document.addEventListener('DOMContentLoaded', function () {
 new Chart(gdpCtx, {
     type: 'line',
     data: {
-        labels: [
-@foreach($gdpTrend as $item)
-'{{ $item->year }}',
+        @foreach($gdpTrend as $item)
+'{{ \Carbon\Carbon::parse($item->created_at)->format("Y") }}',
 @endforeach
-        ],
         datasets: [{
             label: 'GDP Trend Indonesia (Billion USD)',
             backgroundColor: 'rgba(34,197,94,0.25)',
@@ -225,11 +223,9 @@ const inflationCtx = document.getElementById('inflationChart');
 new Chart(inflationCtx, {
     type: 'line',
     data: {
-        labels: [
-@foreach($gdpTrend as $item)
-'{{ $item->year }}',
+        @foreach($gdpTrend as $item)
+'{{ \Carbon\Carbon::parse($item->created_at)->format("Y") }}',
 @endforeach
-        ],
         datasets: [{
             label: 'Inflation Trend Indonesia (%)',
             backgroundColor: 'rgba(245,158,11,0.2)',
