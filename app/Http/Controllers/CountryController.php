@@ -116,6 +116,16 @@ if (!$selectedCountry) {
 }
 
 
+if (!$selectedCountry) {
+
+    return view('countries.index', [
+        'countries' => $countries,
+        'selectedCountry' => null,
+    ]);
+
+}
+
+
 
 
         $weather = WeatherData::where(
