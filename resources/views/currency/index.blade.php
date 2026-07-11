@@ -92,19 +92,19 @@
 
                     <h3 class="text-danger fw-bold mt-2">
 
-                        {{ $highestCurrency['currency'] }}
+                        {{ $highestCurrency['currency'] ?? 'N/A' }}
 
                     </h3>
 
                     <div class="text-white">
 
-                        {{ number_format($highestCurrency['rate'],2) }}
+                        {{ isset($highestCurrency['rate']) ? number_format($highestCurrency['rate'],2) : '0' }}
 
                     </div>
 
                     <small class="text-secondary">
 
-                        {{ $highestCurrency['country'] }}
+                        {{ $highestCurrency['country'] ?? 'N/A' }}
 
                     </small>
 
@@ -132,19 +132,19 @@
 
                     <h3 class="text-success fw-bold mt-2">
 
-                        {{ $lowestCurrency['currency'] }}
+                        {{ $lowestCurrency['currency'] ?? 'N/A' }}
 
                     </h3>
 
                     <div class="text-white">
 
-                        {{ number_format($lowestCurrency['rate'],2) }}
+                        {{ isset($lowestCurrency['rate']) ? number_format($lowestCurrency['rate'],2) : '0' }}
 
                     </div>
 
                     <small class="text-secondary">
 
-                        {{ $lowestCurrency['country'] }}
+                        {{ $lowestCurrency['country'] ?? 'N/A' }}
 
                     </small>
 
