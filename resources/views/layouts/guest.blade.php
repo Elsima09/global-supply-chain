@@ -30,7 +30,7 @@
 
 
             <div class="flex justify-center mb-6">
-                <x-application-logo class="w-24 h-24 fill-current text-orange-400"/>
+                <x-application-logo class="w-20 h-20 fill-current text-orange-400"/>
             </div>
 
 
