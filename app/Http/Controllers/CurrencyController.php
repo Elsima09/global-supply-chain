@@ -91,11 +91,25 @@ class CurrencyController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $totalCurrency = $currencyData->count();
+$totalCurrency = $currencyData->count();
 
-        $highestCurrency = $currencyData->first();
 
-        $lowestCurrency = $currencyData->last();
+$highestCurrency = $currencyData->first() ?? [
+
+    'currency' => 'N/A',
+    'rate' => 0,
+    'country' => 'N/A'
+
+];
+
+
+$lowestCurrency = $currencyData->last() ?? [
+
+    'currency' => 'N/A',
+    'rate' => 0,
+    'country' => 'N/A'
+
+];
 
         /*
         |--------------------------------------------------------------------------
