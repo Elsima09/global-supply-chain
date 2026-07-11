@@ -10,24 +10,67 @@ use App\Models\RiskHistory;
 class ComparisonController extends Controller
 {
     public function index()
-{
-    $comparison = RiskScore::with('country')->get();
+    {
 
-    $gdpTrend = EconomicData::where('country_id', 1)
-    ->orderBy('created_at')
-    ->get();
-$currencyTrend = ExchangeRate::where('currency_code', 'IDR')
-    ->orderBy('created_at')
-    ->get();
-    $riskTrend = RiskHistory::where('country_id', 1)
-    ->orderBy('recorded_at')
-    ->get();
+        /*
+        |--------------------------------------------------------------------------
+        | Country Comparison
+        |--------------------------------------------------------------------------
+        */
 
-    return view('comparison.index', compact(
-    'comparison',
-    'gdpTrend',
-    'currencyTrend',
-    'riskTrend'
-));
-}
+        $comparison = RiskScore::with([
+    'country.economic'
+])
+->whereHas('country.economic', function($query){
+
+    $query->where('gdp','>',0);
+
+})
+->get();
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | GDP + Inflation Trend Indonesia
+        |--------------------------------------------------------------------------
+        */
+
+        $gdpTrend = EconomicData::where('country_id', 1)
+            ->orderBy('year')
+            ->get();
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Currency Trend IDR
+        |--------------------------------------------------------------------------
+        */
+
+        $currencyTrend = ExchangeRate::where('currency_code','IDR')
+            ->orderBy('created_at')
+            ->get();
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Risk History Indonesia
+        |--------------------------------------------------------------------------
+        */
+
+        $riskTrend = RiskHistory::where('country_id',1)
+            ->orderBy('recorded_at')
+            ->get();
+
+
+
+        return view('comparison.index', compact(
+            'comparison',
+            'gdpTrend',
+            'currencyTrend',
+            'riskTrend'
+        ));
+    }
 }

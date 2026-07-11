@@ -25,50 +25,114 @@
         </tr>
     </thead>
 
-    <tbody>
-    @foreach($comparison as $risk)
-        <tr>
-            <td>{{ $risk->country->name }}</td>
-            <td>
+<tbody>
+
+@foreach($comparison as $risk)
+
+<tr>
+
+<td>
+{{ $risk->country->name }}
+</td>
+
+
+<td>
 ${{ number_format($risk->country->economic->gdp ?? 0,0) }}
 </td>
-            <td>{{ $risk->country->inflation ?? 0 }}%</td>
-            <td>${{ number_format($risk->country->exports ?? 0, 0) }}</td>
-            <td>${{ number_format($risk->country->imports ?? 0, 0) }}</td>
-            <td>{{ $risk->weather_score }}</td>
-            <td>{{ $risk->currency_score }}</td>
-            <td>{{ $risk->news_score }}</td>
-            <td>{{ $risk->total_score }}</td>
-            <td>
-                @if($risk->risk_level == 'High')
-                    <span style="
-background:rgba(239,68,68,0.15);
-color:#fca5a5;
-padding:6px 12px;
-border-radius:999px;
-border:1px solid rgba(239,68,68,0.35);
-">High</span>
-                @elseif($risk->risk_level == 'Medium')
-                    <span style="
-background:rgba(245,158,11,0.15);
-color:#fde68a;
-padding:6px 12px;
-border-radius:999px;
-border:1px solid rgba(245,158,11,0.35);
-">Medium</span>
-                @else
-                    <span style="
-background:rgba(34,197,94,0.15);
-color:#86efac;
-padding:6px 12px;
-border-radius:999px;
-border:1px solid rgba(34,197,94,0.35);
-">Low</span>
-                @endif
-            </td>
-        </tr>
-    @endforeach
-    </tbody>
+
+
+<td>
+{{ $risk->country->economic->inflation ?? 0 }}%
+</td>
+
+
+<td>
+
+@if(($risk->country->economic->exports ?? 0) > 0)
+
+${{ number_format($risk->country->economic->exports,0) }}
+
+@else
+
+<span style="color:#64748b">
+No Data
+</span>
+
+@endif
+
+</td>
+
+
+<td>
+
+@if(($risk->country->economic->imports ?? 0) > 0)
+
+${{ number_format($risk->country->economic->imports,0) }}
+
+@else
+
+<span style="color:#64748b">
+No Data
+</span>
+
+@endif
+
+</td>
+
+
+<td>
+{{ $risk->weather_score }}
+</td>
+
+
+<td>
+{{ $risk->currency_score }}
+</td>
+
+
+<td>
+{{ $risk->news_score }}
+</td>
+
+
+<td>
+{{ $risk->total_score }}
+</td>
+
+
+<td>
+
+@if($risk->risk_level == 'High')
+
+<span class="badge bg-danger">
+High
+</span>
+
+@elseif($risk->risk_level == 'Medium')
+
+<span class="badge bg-warning">
+Medium
+</span>
+
+@else
+
+<span class="badge bg-success">
+Low
+</span>
+
+@endif
+
+
+</td>
+
+
+</tr>
+
+
+@endforeach
+
+
+</tbody>
 
 </table>
 
@@ -135,216 +199,377 @@ border:1px solid rgba(34,197,94,0.35);
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const ctx = document.getElementById('comparisonChart');
 
-    new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: [
+<script>
+
+document.addEventListener('DOMContentLoaded',()=>{
+
+
+// =====================
+// RISK COMPARISON
+// =====================
+
+new Chart(
+document.getElementById('comparisonChart'),
+{
+
+type:'bar',
+
+data:{
+
+labels:[
 @foreach($comparison as $risk)
 '{{ $risk->country->name }}',
 @endforeach
-        ],
-        datasets: [{
-            label: 'Risk Score',
-            backgroundColor:'rgba(56,189,248,0.45)',
-            borderColor:'#38bdf8',
-            data: [
+],
+
+
+datasets:[{
+
+label:'Risk Score',
+
+data:[
 @foreach($comparison as $risk)
 {{ $risk->total_score }},
 @endforeach
-            ],
-            borderWidth: 1
-        }]
-    },
-    options:{
-        responsive:true,
-        maintainAspectRatio:false,
-        plugins:{
-            legend:{
-                labels:{ color:'white' }
-            }
-        },
-        scales:{
-            x:{
-                ticks:{ color:'white' }
-            },
-            y:{
-                ticks:{ color:'white' }
-            }
-        }
-    }
-});
-    const gdpCtx = document.getElementById('gdpChart');
+],
 
-new Chart(gdpCtx, {
-    type: 'line',
-    data: {
-        @foreach($gdpTrend as $item)
-'{{ \Carbon\Carbon::parse($item->created_at)->format("Y") }}',
-@endforeach
-        datasets: [{
-            label: 'GDP Trend Indonesia (Billion USD)',
-            backgroundColor: 'rgba(34,197,94,0.25)',
-            borderColor: '#22c55e',
-            data: [
-@foreach($gdpTrend as $item)
-{{ round($item->gdp / 1000000000, 2) }},
-@endforeach
-            ],
-            tension: 0.3,
-            fill: true,
-            borderWidth: 2
-        }]
-    },
-    options:{
-        responsive:true,
-        maintainAspectRatio:false,
-        plugins:{
-            legend:{
-                labels:{ color:'white' }
-            }
-        },
-        scales:{
-            x:{
-                ticks:{ color:'white' },
-                grid:{ color:'rgba(255,255,255,0.08)' }
-            },
-            y:{
-                ticks:{ color:'white' },
-                grid:{ color:'rgba(255,255,255,0.08)' }
-            }
-        }
-    }
+
+backgroundColor:'rgba(56,189,248,.45)',
+
+borderColor:'#38bdf8',
+
+borderWidth:1
+
+
+}]
+
+
+},
+
+
+options:{
+
+responsive:true,
+
+maintainAspectRatio:false
+
+
+}
+
 });
 
-const inflationCtx = document.getElementById('inflationChart');
 
-new Chart(inflationCtx, {
-    type: 'line',
-    data: {
-        @foreach($gdpTrend as $item)
-'{{ \Carbon\Carbon::parse($item->created_at)->format("Y") }}',
-@endforeach
-        datasets: [{
-            label: 'Inflation Trend Indonesia (%)',
-            backgroundColor: 'rgba(245,158,11,0.2)',
-            borderColor: '#f59e0b',
-            data: [
+
+
+// =====================
+// GDP CHART
+// =====================
+
+
+new Chart(
+
+document.getElementById('gdpChart'),
+
+{
+
+
+type:'line',
+
+
+data:{
+
+
+labels:[
+
 @foreach($gdpTrend as $item)
+
+'{{ $item->year }}',
+
+@endforeach
+
+],
+
+
+
+datasets:[{
+
+
+label:'GDP Indonesia (Billion USD)',
+
+
+data:[
+
+@foreach($gdpTrend as $item)
+
+{{ round($item->gdp/1000000000,2) }},
+
+@endforeach
+
+],
+
+
+borderColor:'#22c55e',
+
+backgroundColor:'rgba(34,197,94,.2)',
+
+
+fill:true,
+
+tension:.3
+
+
+}]
+
+
+},
+
+
+options:{
+
+responsive:true,
+
+maintainAspectRatio:false
+
+
+}
+
+
+});
+
+
+
+
+// =====================
+// INFLATION CHART
+// =====================
+
+
+new Chart(
+
+document.getElementById('inflationChart'),
+
+{
+
+
+type:'line',
+
+
+data:{
+
+
+labels:[
+
+@foreach($gdpTrend as $item)
+
+'{{ $item->year }}',
+
+@endforeach
+
+],
+
+
+datasets:[{
+
+
+label:'Inflation (%)',
+
+
+data:[
+
+@foreach($gdpTrend as $item)
+
 {{ $item->inflation }},
-@endforeach
-            ],
-            tension: 0.3,
-            fill: true,
-            borderWidth: 2
-        }]
-    },
-    options:{
-        responsive:true,
-        maintainAspectRatio:false,
-        plugins:{
-            legend:{
-                labels:{ color:'white' }
-            }
-        },
-        scales:{
-            x:{
-                ticks:{ color:'white' }
-            },
-            y:{
-                ticks:{ color:'white' }
-            }
-        }
-    }
-});
-const currencyCtx = document.getElementById('currencyChart');
 
-new Chart(currencyCtx, {
-    type: 'line',
-    data: {
-        labels: [
-@foreach($currencyTrend as $item)
-'{{ \Carbon\Carbon::parse($item->created_at)->format("Y") }}',
 @endforeach
-        ],
-        datasets: [{
-            label: 'USD to IDR Trend',
-            backgroundColor: 'rgba(168,85,247,0.2)',
-            borderColor: '#a855f7',
-            data: [
-@foreach($currencyTrend as $item)
-{{ round($item->rate, 2) }},
-@endforeach
-            ],
-            tension: 0.3,
-            fill: true,
-            borderWidth: 2
-        }]
-    },
-    options:{
-        responsive:true,
-        maintainAspectRatio:false,
-        plugins:{
-            legend:{
-                labels:{ color:'white' }
-            }
-        },
-        scales:{
-            x:{
-                ticks:{ color:'white' }
-            },
-            y:{
-                ticks:{ color:'white' }
-            }
-        }
-    }
-});
-const riskTrendCtx = document.getElementById('riskTrendChart');
 
-new Chart(riskTrendCtx, {
-    type: 'line',
-    data: {
-        labels: [
+],
+
+
+borderColor:'#f59e0b',
+
+backgroundColor:'rgba(245,158,11,.2)',
+
+
+fill:true,
+
+tension:.3
+
+
+}]
+
+
+},
+
+
+options:{
+
+responsive:true,
+
+maintainAspectRatio:false
+
+}
+
+
+});
+
+
+
+
+// =====================
+// CURRENCY CHART
+// =====================
+
+
+new Chart(
+
+document.getElementById('currencyChart'),
+
+{
+
+
+type:'line',
+
+
+data:{
+
+
+labels:[
+
+@foreach($currencyTrend as $item)
+
+'{{ $item->created_at->format("Y") }}',
+
+@endforeach
+
+],
+
+
+datasets:[{
+
+
+label:'USD IDR',
+
+
+data:[
+
+@foreach($currencyTrend as $item)
+
+{{ $item->rate }},
+
+@endforeach
+
+],
+
+
+borderColor:'#a855f7',
+
+backgroundColor:'rgba(168,85,247,.2)',
+
+
+fill:true,
+
+tension:.3
+
+
+}]
+
+
+},
+
+
+options:{
+
+responsive:true,
+
+maintainAspectRatio:false
+
+}
+
+
+});
+
+
+
+
+// =====================
+// RISK TREND
+// =====================
+
+
+new Chart(
+
+document.getElementById('riskTrendChart'),
+
+{
+
+
+type:'line',
+
+
+data:{
+
+
+labels:[
+
 @foreach($riskTrend as $item)
+
 '{{ \Carbon\Carbon::parse($item->recorded_at)->format("Y") }}',
+
 @endforeach
-        ],
-        datasets: [{
-            label: 'Risk Trend Indonesia',
-            backgroundColor: 'rgba(239,68,68,0.2)',
-            borderColor: '#ef4444',
-            data: [
+
+],
+
+
+datasets:[{
+
+
+label:'Risk History',
+
+
+data:[
+
 @foreach($riskTrend as $item)
+
 {{ $item->risk_score }},
+
 @endforeach
-            ],
-            tension: 0.3,
-            fill: true,
-            borderWidth: 2
-        }]
-    },
-    options:{
-        responsive:true,
-        maintainAspectRatio:false,
-        plugins:{
-            legend:{
-                labels:{ color:'white' }
-            }
-        },
-        scales:{
-            x:{
-                ticks:{ color:'white' }
-            },
-            y:{
-                ticks:{ color:'white' }
-            }
-        }
-    }
+
+],
+
+
+borderColor:'#ef4444',
+
+backgroundColor:'rgba(239,68,68,.2)',
+
+
+fill:true,
+
+tension:.3
+
+
+}]
+
+
+},
+
+
+options:{
+
+responsive:true,
+
+maintainAspectRatio:false
+
+}
+
+
 });
+
+
+
 });
+
+
 </script>
 
 @endsection
