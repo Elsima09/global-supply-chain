@@ -29,10 +29,12 @@
     @foreach($comparison as $risk)
         <tr>
             <td>{{ $risk->country->name }}</td>
-            <td>${{ number_format($risk->country->gdp, 0) }}</td>
-            <td>{{ $risk->country->inflation_rate }}%</td>
-            <td>${{ number_format($risk->country->export_value, 0) }}</td>
-            <td>${{ number_format($risk->country->import_value, 0) }}</td>
+            <td>
+${{ number_format($risk->country->economic->gdp ?? 0,0) }}
+</td>
+            <td>{{ $risk->country->inflation ?? 0 }}%</td>
+            <td>${{ number_format($risk->country->exports ?? 0, 0) }}</td>
+            <td>${{ number_format($risk->country->imports ?? 0, 0) }}</td>
             <td>{{ $risk->weather_score }}</td>
             <td>{{ $risk->currency_score }}</td>
             <td>{{ $risk->news_score }}</td>
