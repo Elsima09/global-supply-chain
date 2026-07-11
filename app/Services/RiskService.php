@@ -30,18 +30,18 @@ public function calculate(
     return round($score, 2);
 }
 
-    public function level($score)
-    {
-        if($score>=70){
-            return "High";
-        }
-
-        if($score>=40){
-            return "Medium";
-        }
-
-        return "Low";
+public function level($score)
+{
+    if($score >= 60){
+        return "High";
     }
+
+    if($score >= 35){
+        return "Medium";
+    }
+
+    return "Low";
+}
 
     public function calculateAll()
 {
@@ -78,12 +78,13 @@ if($weatherRisk === null){
         $currencyRisk = 20;
     }
 
-    $riskScore = $this->calculate(
-        $weatherRisk,
-        $inflationRisk,
-        $currencyRisk,
-        $newsRisk
-    );
+ $riskScore = $this->calculate(
+    $weatherRisk,
+    $inflationRisk,
+    $currencyRisk,
+    $newsRisk,
+    50
+);
 
     $riskLevel = $this->level($riskScore);
 
