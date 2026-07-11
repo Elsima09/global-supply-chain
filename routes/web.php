@@ -19,7 +19,7 @@ use App\Http\Controllers\AdminCountryController;
 use App\Services\LogisticsRiskService;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/login');
 });
 
 use App\Http\Controllers\DashboardController;
