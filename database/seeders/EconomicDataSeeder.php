@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Country;
 use App\Models\EconomicData;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 class EconomicDataSeeder extends Seeder
@@ -38,6 +39,30 @@ class EconomicDataSeeder extends Seeder
 
         foreach($countries as $country)
         {
+
+        if(
+in_array($country->code, [
+
+'HM',
+'TF',
+'GU',
+'GF',
+'GI',
+'UM',
+'PN',
+'TK',
+'NU',
+'WF',
+'BV'
+
+])
+){
+
+echo "Skip {$country->name}\n";
+
+continue;
+
+}
 
 
             if(!isset($iso3[$country->code])){
@@ -218,58 +243,73 @@ class EconomicDataSeeder extends Seeder
     */
 
 
-    private function getIndicator($country,$indicator)
+private function getIndicator($country,$indicator)
 {
 
-    try {
+    $cacheKey = "worldbank_{$country}_{$indicator}";
 
 
-        $response = Http::timeout(60)
-            ->retry(3,2000)
-            ->get(
-                "https://api.worldbank.org/v2/country/{$country}/indicator/{$indicator}?format=json"
-            );
+    return Cache::remember(
+        $cacheKey,
+        now()->addHours(12),
+        function() use ($country,$indicator){
 
 
-        $data = $response->json();
+            try {
+
+
+                $response = Http::timeout(8)
+                    ->get(
+                        "https://api.worldbank.org/v2/country/{$country}/indicator/{$indicator}?format=json"
+                    );
+
+
+                $data = $response->json();
 
 
 
-        if(!isset($data[1])){
+                if(!isset($data[1])){
 
-            return null;
+                    return 0;
 
-        }
-
-
-
-        foreach($data[1] as $item){
+                }
 
 
-            if(
-                isset($item['value']) &&
-                $item['value'] !== null
-            ){
 
-                return $item['value'];
+                foreach($data[1] as $item){
+
+
+                    if(
+                        isset($item['value'])
+                        &&
+                        $item['value'] !== null
+                    ){
+
+                        return $item['value'];
+
+                    }
+
+
+                }
+
+
+
+            }
+            catch(\Exception $e){
+
+
+                return 0;
+
 
             }
 
 
+
+            return 0;
+
+
         }
-
-
-
-    }
-    catch(\Exception $e){
-
-        return null;
-
-    }
-
-
-    return null;
-
+    );
 
 }
 
