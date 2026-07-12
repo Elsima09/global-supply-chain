@@ -1307,15 +1307,16 @@ ${{ number_format(($economicData->gdp ?? 0) / 1000000000,2) }} B
 
 <h3 class="text-info">
 
-    {{ $risk->weather_score ?? 0 }}
+    {{ optional($riskScore)->weather_score ?? 0 }}
 
 </h3>
+
 
 <div class="progress mt-2">
 
     <div
         class="progress-bar bg-info"
-        style="width:{{ $risk->weather_score ?? 0 }}%">
+        style="width:{{ optional($riskScore)->weather_score ?? 0 }}%">
     </div>
 
 </div>
