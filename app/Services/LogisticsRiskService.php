@@ -9,19 +9,18 @@ use App\Models\TransportHistory;
 class LogisticsRiskService
 {
 
-    public function calculate($country=null)
+    public function calculate($country = null)
     {
 
 
         /*
         |--------------------------------------------------------------------------
-        | Ambil Port
+        | AMBIL PORT NEGARA
         |--------------------------------------------------------------------------
         */
 
 
         $query = Port::query();
-
 
 
         if($country){
@@ -39,9 +38,16 @@ class LogisticsRiskService
 
 
 
+        /*
+        |--------------------------------------------------------------------------
+        | JIKA TIDAK ADA PORT
+        |--------------------------------------------------------------------------
+        */
+
+
         if($ports->count()==0){
 
-            return 50;
+            return 70;
 
         }
 
@@ -51,37 +57,26 @@ class LogisticsRiskService
 
         /*
         |--------------------------------------------------------------------------
-        | 1. PORT AVAILABILITY
+        | 1. PORT AVAILABILITY SCORE
         |--------------------------------------------------------------------------
         */
 
 
-        $portRisk = 0;
+        $activePorts = $ports
+            ->where('status','active')
+            ->count();
 
 
 
-        foreach($ports as $port)
-        {
-
-
-            if($port->status == "active"){
-
-                $portRisk += 20;
-
-            }
-
-            else{
-
-                $portRisk += 60;
-
-            }
-
-
-        }
+        $totalPorts = $ports->count();
 
 
 
-        $portRisk = $portRisk / $ports->count();
+        $availabilityRisk = 100 -
+        (
+            ($activePorts / $totalPorts)
+            *100
+        );
 
 
 
@@ -89,12 +84,39 @@ class LogisticsRiskService
 
         /*
         |--------------------------------------------------------------------------
-        | 2. TRANSPORT HISTORY
+        | 2. PORT DIVERSITY RISK
         |--------------------------------------------------------------------------
         */
 
 
-        $historyRisk = 30;
+        if($totalPorts >= 5){
+
+            $portRisk = 20;
+
+        }
+        elseif($totalPorts >=3){
+
+            $portRisk = 35;
+
+        }
+        else{
+
+            $portRisk = 60;
+
+        }
+
+
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | 3. TRANSPORT HISTORY
+        |--------------------------------------------------------------------------
+        */
+
+
+        $historyRisk = 40;
 
 
 
@@ -131,31 +153,44 @@ class LogisticsRiskService
 
 
 
-
         /*
         |--------------------------------------------------------------------------
-        | FINAL LOGISTICS RISK
+        | FINAL LOGISTICS SCORE
         |--------------------------------------------------------------------------
         */
 
 
-        $risk = (
+        $finalScore =
 
-            ($portRisk * 0.5)
+        (
 
-            +
+            $availabilityRisk * 0.35
 
-            ($historyRisk * 0.5)
+        )
+
+        +
+
+        (
+
+            $portRisk * 0.35
+
+        )
+
+        +
+
+        (
+
+            $historyRisk * 0.30
 
         );
 
 
 
-        return round($risk);
+
+        return round($finalScore);
 
 
 
     }
-
 
 }

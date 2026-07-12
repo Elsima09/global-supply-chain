@@ -219,8 +219,6 @@ Port::updateOrCreate(
 
     'congestion'=>'Low',
 
-    'transport_risk'=>30,
-
     'traffic_level'=>'Medium',
 
     'congestion_level'=>30,
