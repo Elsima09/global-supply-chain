@@ -11,10 +11,13 @@ class DatabaseSeeder extends Seeder
     {
 
 $this->call([
-    CountrySeeder::class,
-    EconomicDataSeeder::class,
-    TransportHistorySeeder::class,
-]);
+            CountrySeeder::class,
+            EconomicDataSeeder::class,
+            PortSeeder::class,
+            NewsSeeder::class,
+            TransportHistorySeeder::class,
+            RiskScoreSeeder::class,
+        ]);
 
     }
 
