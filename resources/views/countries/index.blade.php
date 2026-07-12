@@ -309,7 +309,7 @@ strtolower($port->congestion ?? 'low');
 
 <small class="text-secondary">
 
-AI Logistics Risk Score
+AI Country Logistics Risk Score
 
 </small>
 
@@ -318,7 +318,7 @@ AI Logistics Risk Score
 @php
 
 $portRisk =
-$port->transport_risk ?? 0;
+$selectedCountry->riskScore?->logistics_score ?? 0;
 
 
 $riskColor="success";
@@ -337,7 +337,6 @@ elseif($portRisk >=40){
 }
 
 @endphp
-
 
 
 <h1 class="text-{{ $riskColor }} fw-bold">
