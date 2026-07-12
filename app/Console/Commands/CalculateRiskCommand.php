@@ -22,12 +22,24 @@ class CalculateRiskCommand extends Command
 
             $data = $riskService->calculateByCountry($country);
 
-            RiskScore::updateOrCreate(
-                [
-                    'country_id'=>$country->id
-                ],
-                $data
-            );
+RiskScore::updateOrCreate(
+    [
+        'country_id'=>$country->id
+    ],
+    $data
+);
+
+
+
+\App\Models\RiskHistory::create([
+
+    'country_id' => $country->id,
+
+    'risk_score' => $data['total_score'],
+
+    'recorded_at' => now()
+
+]);
 
             $this->info(
                 "Updated ".$country->name
