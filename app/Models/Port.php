@@ -2,49 +2,58 @@
 
 namespace App\Models;
 
-
 use Illuminate\Database\Eloquent\Model;
-
 
 class Port extends Model
 {
 
+    protected $fillable = [
 
-protected $fillable=[
+        'country_id',
+        'port_name',
+        'country',
+        'latitude',
+        'longitude',
+        'status',
+        'delay_hours',
+        'capacity',
+        'congestion',
+        'transport_risk',
+        'traffic_level',
+        'congestion_level',
+        'logistics_score'
 
-'country_id',
-'port_name',
-'latitude',
-'longitude',
-'status',
-'delay_hours',
-'capacity',
-'congestion',
-'transport_risk'
-
-];
-
-
-
-public function country()
-{
-
-return $this->belongsTo(
-Country::class
-);
-
-}
+    ];
 
 
+    /*
+    |--------------------------------------------------------------------------
+    | RELATION COUNTRY
+    |--------------------------------------------------------------------------
+    */
 
-public function transportHistories()
-{
+    public function country()
+    {
+        return $this->belongsTo(
+            Country::class,
+            'country_id'
+        );
+    }
 
-return $this->hasMany(
-TransportHistory::class
-);
 
-}
+
+    /*
+    |--------------------------------------------------------------------------
+    | TRANSPORT HISTORY
+    |--------------------------------------------------------------------------
+    */
+
+    public function transportHistories()
+    {
+        return $this->hasMany(
+            TransportHistory::class
+        );
+    }
 
 
 }
