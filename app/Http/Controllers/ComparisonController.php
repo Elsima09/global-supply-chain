@@ -86,12 +86,13 @@ class ComparisonController extends Controller
         */
 
 
-        $currencyTrend = ExchangeRateHistory::where(
-            'currency_code',
-            'IDR'
-        )
-        ->orderBy('created_at','asc')
-        ->get();
+$currencyTrend = ExchangeRateHistory::where(
+    'currency_code',
+    'IDR'
+)
+->orderBy('created_at','asc')
+->limit(30)
+->get();
 
 
 
@@ -107,15 +108,16 @@ class ComparisonController extends Controller
         */
 
 
-        $riskTrend = RiskHistory::where(
-            'country_id',
-            $indonesiaId
-        )
-        ->orderBy(
-            'recorded_at',
-            'asc'
-        )
-        ->get();
+$riskTrend = RiskHistory::where(
+    'country_id',
+    $indonesiaId
+)
+->orderBy(
+    'recorded_at',
+    'asc'
+)
+->limit(30)
+->get();
 
 
 

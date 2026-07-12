@@ -1,11 +1,15 @@
 <?php
 
-
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
 
 
+/*
+|--------------------------------------------------------------------------
+| Default Laravel Command
+|--------------------------------------------------------------------------
+*/
 
 Artisan::command('inspire', function () {
 
@@ -18,10 +22,19 @@ Artisan::command('inspire', function () {
 
 
 
-
 /*
 |--------------------------------------------------------------------------
-| AUTOMATIC RISK CALCULATION
+| Supply Chain Risk Scheduler
+|--------------------------------------------------------------------------
+|
+| Menghitung ulang risiko supply chain secara otomatis.
+|
+| Production:
+| - daily()  = setiap hari
+|
+| Testing:
+| - everyMinute() = setiap menit
+|
 |--------------------------------------------------------------------------
 */
 

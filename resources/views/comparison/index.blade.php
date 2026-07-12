@@ -156,7 +156,7 @@ $inflationValues = $gdpTrend->pluck('inflation');
 
 $currencyYears = $currencyTrend->map(function($item){
 
-return $item->created_at->format('Y');
+return $item->created_at->format('d M');
 
 });
 
@@ -166,7 +166,9 @@ $currencyValues = $currencyTrend->pluck('rate');
 
 $riskYears = $riskTrend->map(function($item){
 
-return \Carbon\Carbon::parse($item->recorded_at)->format('Y');
+return \Carbon\Carbon::parse(
+$item->recorded_at
+)->format('d M');
 
 });
 
