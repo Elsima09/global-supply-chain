@@ -8,8 +8,10 @@ use App\Models\EconomicData;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
+
 class EconomicDataSeeder extends Seeder
 {
+
 
     public function run(): void
     {
@@ -21,9 +23,11 @@ class EconomicDataSeeder extends Seeder
         |--------------------------------------------------------------------------
         */
 
+
         $library = new \League\ISO3166\ISO3166();
 
-        $iso3 = [];
+
+        $iso3=[];
 
 
         foreach($library->all() as $item){
@@ -34,7 +38,9 @@ class EconomicDataSeeder extends Seeder
 
 
 
-        $skipCountries = [
+
+
+        $skipCountries=[
 
             'HM',
             'TF',
@@ -52,29 +58,18 @@ class EconomicDataSeeder extends Seeder
 
 
 
-        $countries = Country::all();
 
-
-
-        foreach($countries as $country)
+        foreach(Country::all() as $country)
         {
 
 
-            echo "\nProcessing : {$country->name}\n";
+            echo "\nProcessing {$country->name}\n";
 
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | SKIP SMALL TERRITORIES
-            |--------------------------------------------------------------------------
-            */
 
 
             if(in_array($country->code,$skipCountries)){
 
-
-                echo "Skipped territory\n";
+                echo "Skipped Territory\n";
 
                 continue;
 
@@ -82,27 +77,18 @@ class EconomicDataSeeder extends Seeder
 
 
 
-
-            /*
-            |--------------------------------------------------------------------------
-            | CHECK ISO
-            |--------------------------------------------------------------------------
-            */
-
-
             if(!isset($iso3[$country->code])){
-
 
                 echo "Skipped ISO\n";
 
                 continue;
 
-
             }
 
 
 
-            $code = $iso3[$country->code];
+            $code=$iso3[$country->code];
+
 
 
 
@@ -110,40 +96,36 @@ class EconomicDataSeeder extends Seeder
 
 
 
-                echo "GDP...\n";
+                /*
+                |--------------------------------------------------------------------------
+                | GET 6 YEARS DATA
+                |--------------------------------------------------------------------------
+                */
 
 
-                $gdp = $this->getIndicator(
+                $gdp =
+                $this->getHistory(
                     $code,
                     'NY.GDP.MKTP.CD'
                 );
 
 
-
-                echo "Inflation...\n";
-
-
-                $inflation = $this->getIndicator(
+                $inflation =
+                $this->getHistory(
                     $code,
                     'FP.CPI.TOTL.ZG'
                 );
 
 
-
-                echo "Export...\n";
-
-
-                $exports = $this->getIndicator(
+                $exports =
+                $this->getHistory(
                     $code,
                     'NE.EXP.GNFS.CD'
                 );
 
 
-
-                echo "Import...\n";
-
-
-                $imports = $this->getIndicator(
+                $imports =
+                $this->getHistory(
                     $code,
                     'NE.IMP.GNFS.CD'
                 );
@@ -153,52 +135,45 @@ class EconomicDataSeeder extends Seeder
 
                 /*
                 |--------------------------------------------------------------------------
-                | DEFAULT VALUE
+                | SAVE PER YEAR
                 |--------------------------------------------------------------------------
                 */
 
 
-                $gdp = $gdp ?? 0;
-
-                $inflation = $inflation ?? 0;
-
-                $exports = $exports ?? 0;
-
-                $imports = $imports ?? 0;
+                foreach($gdp as $year=>$value)
+                {
 
 
+                    EconomicData::updateOrCreate(
+
+                        [
+
+                            'country_id'=>$country->id,
+
+                            'year'=>$year
+
+                        ],
 
 
-                /*
-                |--------------------------------------------------------------------------
-                | SAVE
-                |--------------------------------------------------------------------------
-                */
+                        [
+
+                            'gdp'=>$value ?? 0,
 
 
-                EconomicData::updateOrCreate(
+                            'inflation'=>$inflation[$year] ?? 0,
 
-                    [
 
-                        'country_id'=>$country->id,
+                            'exports'=>$exports[$year] ?? 0,
 
-                        'year'=>2025
 
-                    ],
+                            'imports'=>$imports[$year] ?? 0
 
-                    [
+                        ]
 
-                        'gdp'=>$gdp,
+                    );
 
-                        'inflation'=>$inflation,
 
-                        'exports'=>$exports,
-
-                        'imports'=>$imports
-
-                    ]
-
-                );
+                }
 
 
 
@@ -208,49 +183,22 @@ class EconomicDataSeeder extends Seeder
 
             }
 
+
+
             catch(\Throwable $e){
 
 
                 echo "FAILED {$country->name} : ".$e->getMessage()."\n";
 
 
-                /*
-                tetap insert kosong
-                */
-
-                EconomicData::updateOrCreate(
-
-                    [
-
-                        'country_id'=>$country->id,
-
-                        'year'=>2025
-
-                    ],
-
-                    [
-
-                        'gdp'=>0,
-
-                        'inflation'=>0,
-
-                        'exports'=>0,
-
-                        'imports'=>0
-
-                    ]
-
-                );
-
-
             }
+
 
 
         }
 
 
-
-        echo "\nEconomic Data Finished\n";
+        echo "\nEconomic Seeder Finished\n";
 
 
     }
@@ -259,18 +207,22 @@ class EconomicDataSeeder extends Seeder
 
 
 
+
+
+
     /*
     |--------------------------------------------------------------------------
-    | WORLD BANK API
+    | WORLD BANK HISTORY
     |--------------------------------------------------------------------------
     */
 
 
-    private function getIndicator($country,$indicator)
+    private function getHistory($country,$indicator)
     {
 
 
-        $cacheKey = "worldbank_{$country}_{$indicator}";
+        $cacheKey =
+        "wb_history_{$country}_{$indicator}";
 
 
 
@@ -284,62 +236,69 @@ class EconomicDataSeeder extends Seeder
             function() use ($country,$indicator){
 
 
+
                 try {
 
 
+                    $response = Http::connectTimeout(5)
+                    ->timeout(15)
+                    ->get(
 
-                    $response = Http::connectTimeout(3)
-                        ->timeout(5)
-                        ->get(
+"https://api.worldbank.org/v2/country/{$country}/indicator/{$indicator}?date=2020:2025&format=json&per_page=100"
 
-                            "https://api.worldbank.org/v2/country/{$country}/indicator/{$indicator}?format=json"
-
-                        );
-
+                    );
 
 
 
                     if(!$response->successful()){
 
-                        return 0;
+                        return [];
 
                     }
 
 
 
-                    $data = $response->json();
+                    $json=$response->json();
 
 
 
-                    if(!isset($data[1])){
+                    if(!isset($json[1])){
 
-                        return 0;
+                        return [];
 
                     }
 
 
 
+                    $result=[];
 
-                    foreach($data[1] as $item){
+
+
+                    foreach($json[1] as $item){
 
 
 
                         if(
-
                             isset($item['value'])
-
                             &&
-
                             $item['value'] !== null
-
                         ){
 
-                            return $item['value'];
+
+                            $result[
+                                $item['date']
+                            ] =
+                            $item['value'];
+
 
                         }
 
 
                     }
+
+
+
+                    return $result;
 
 
 
@@ -349,14 +308,11 @@ class EconomicDataSeeder extends Seeder
                 catch(\Throwable $e){
 
 
-                    return 0;
+                    return [];
 
 
                 }
 
-
-
-                return 0;
 
 
             }
