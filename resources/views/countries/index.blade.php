@@ -59,7 +59,7 @@
 
 <div class="card futuristic-card border-0 mt-4">
 
-    <div class="card-body">
+<div class="card-body">
 
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -74,259 +74,366 @@
 
 <small class="text-secondary">
 
-Real-time logistics performance for {{ $selectedCountry->name }}
+Logistics monitoring for {{ $selectedCountry->name }}
 
 </small>
 
 </div>
 
-<span class="badge bg-success fs-6">
 
-{{ $ports->count() }} Active Ports
+<span class="badge bg-info fs-6">
+
+{{ $ports->count() }} Ports
 
 </span>
+
 
 </div>
 
 
 
-        @if($ports->count())
+@if($ports->count())
 
 
-        <div class="row g-3">
+<div class="row g-4">
 
 
-        @foreach($ports as $port)
+@foreach($ports as $port)
 
 
-            <div class="col-lg-6">
+<div class="col-lg-6">
 
 
-                <div class="card futuristic-card transport-card h-100">
-
-    <div class="card-body">
+<div class="card futuristic-card h-100">
 
 
-                    <h5 class="text-white mb-4">
-
-                        🚢 {{ $port->port_name }}
-
-                    </h5>
+<div class="card-body">
 
 
 
-                    <div class="row">
+<h4 class="text-white mb-4">
 
+🚢 {{ $port->port_name }}
 
-                        <div class="col-6 mb-3">
-
-                            <small class="text-secondary">
-                                Status
-                            </small>
-
-@php
-
-$statusColor = 'success';
-$statusIcon = '🟢';
-
-if(strtolower($port->status) == 'maintenance'){
-    $statusColor = 'warning';
-    $statusIcon = '🟡';
-}
-
-if(strtolower($port->status) == 'closed'){
-    $statusColor = 'danger';
-    $statusIcon = '🔴';
-}
-
-@endphp
-
-<h6 class="text-{{ $statusColor }}">
-
-{{ $statusIcon }} {{ ucfirst($port->status) }}
-
-</h6>
-
-                        </div>
+</h4>
 
 
 
-                        <div class="col-6 mb-3">
-
-                            <small class="text-secondary">
-                                Delay
-                            </small>
-
-<span class="badge bg-warning fs-6">
-
-⏱ {{ $port->delay_hours }} Hours
-
-</span>
-
-                        </div>
+<div class="row">
 
 
 
-                        <div class="col-6">
+{{-- STATUS --}}
+
+<div class="col-md-6 mb-3">
+
 
 <small class="text-secondary">
 
-📦 Capacity
+Status
 
 </small>
 
-<div class="mt-2">
 
-<div class="progress" style="height:10px;">
-
-    @php
-
-        $capacityColor = 'danger';
-
-        if($port->capacity >= 85){
-            $capacityColor = 'success';
-        }
-        elseif($port->capacity >= 60){
-            $capacityColor = 'warning';
-        }
-
-    @endphp
-
-    <div
-        class="progress-bar bg-{{ $capacityColor }}"
-        style="width:{{ $port->capacity }}%">
-    </div>
-
-</div>
-
-<div class="text-end mt-1">
-
-<b class="text-info">
-
-{{ $port->capacity }}%
-
-</b>
-
-</div>
-
-</div>
-
-                        </div>
+<br>
 
 
+@if($port->status=="active")
 
-                        <div class="col-6">
 
-                            <small class="text-secondary">
-                                Congestion
-                            </small>
+<span class="badge bg-success">
 
-                                @php
-
-$congestion = strtolower($port->congestion);
-
-$badge = 'success';
-
-if($congestion == 'medium'){
-    $badge = 'warning';
-}
-
-if($congestion == 'high'){
-    $badge = 'danger';
-}
-
-@endphp
-
-<span class="badge bg-{{ $badge }}">
-
-🚚 {{ ucfirst($port->congestion) }}
+🟢 Active
 
 </span>
 
 
-                        </div>
+@elseif($port->status=="maintenance")
 
 
-                    </div>
+<span class="badge bg-warning text-dark">
+
+🟡 Maintenance
+
+</span>
 
 
-                    <hr>
+@else
 
 
-                    <div class="text-center">
+<span class="badge bg-danger">
+
+🔴 Closed
+
+</span>
 
 
-                        <small class="text-secondary">
-                            Logistics Risk
-                        </small>
+@endif
+
+
+</div>
+
+
+
+
+{{-- COUNTRY --}}
+
+<div class="col-md-6 mb-3">
+
+
+<small class="text-secondary">
+
+Country
+
+</small>
+
+
+<h6 class="text-info">
+
+🌎 {{ $selectedCountry->name }}
+
+</h6>
+
+
+</div>
+
+
+
+
+
+
+{{-- LOCATION --}}
+
+<div class="col-md-6 mb-3">
+
+
+<small class="text-secondary">
+
+Coordinates
+
+</small>
+
+
+<h6 class="text-white">
+
+📍
+
+{{ $port->latitude }},
+
+{{ $port->longitude }}
+
+</h6>
+
+
+</div>
+
+
+
+
+
+
+{{-- CONGESTION --}}
+
+<div class="col-md-6 mb-3">
+
+
+<small class="text-secondary">
+
+Congestion
+
+</small>
+
+
+<br>
 
 
 @php
 
-$riskColor = 'success';
+$congestion =
+strtolower($port->congestion ?? 'low');
 
-if($port->transport_risk >= 70){
-
-    $riskColor = 'danger';
-
-}
-elseif($port->transport_risk >= 40){
-
-    $riskColor = 'warning';
-
-}
 
 @endphp
 
-<h2 class="text-{{ $riskColor }} fw-bold">
 
-{{ $port->transport_risk }}
 
-</h2>
+@if($congestion=="high")
+
+
+<span class="badge bg-danger">
+
+🚚 High
+
+</span>
+
+
+@elseif($congestion=="medium")
+
+
+<span class="badge bg-warning text-dark">
+
+🚚 Medium
+
+</span>
+
+
+@else
+
+
+<span class="badge bg-success">
+
+🚚 Low
+
+</span>
+
+
+@endif
+
+
+</div>
+
+
+
+</div>
+
+
+
+<hr>
+
+
+
+{{-- AI RISK --}}
+
+<div class="text-center">
+
+
+<small class="text-secondary">
+
+AI Logistics Risk Score
+
+</small>
+
+
+
+@php
+
+$risk =
+$port->transport_risk ?? 0;
+
+
+$riskColor="success";
+
+
+if($risk>=70){
+
+$riskColor="danger";
+
+}
+
+elseif($risk>=40){
+
+$riskColor="warning";
+
+}
+
+
+@endphp
+
+
+
+<h1 class="text-{{ $riskColor }} fw-bold">
+
+{{ $risk }}
+
+</h1>
+
+
+
+@if($risk>=70)
+
+
+<span class="badge bg-danger">
+
+🔴 High Risk
+
+</span>
+
+
+@elseif($risk>=40)
+
+
+<span class="badge bg-warning text-dark">
+
+🟡 Medium Risk
+
+</span>
+
+
+@else
+
+
+<span class="badge bg-success">
+
+🟢 Low Risk
+
+</span>
+
+
+@endif
+
+
 
 <div class="progress mt-3">
 
+
 <div
-class="progress-bar bg-warning"
 
-style="width:{{ $port->transport_risk }}%">
+class="progress-bar bg-{{ $riskColor }}"
+
+style="width:{{ $risk }}%">
 
 </div>
 
+
 </div>
 
 
-                    </div>
+</div>
 
 
-                </div>
+
+</div>
 
 
-            </div>
-
-    </div>
-
-        @endforeach
+</div>
 
 
-        </div>
+</div>
 
 
-        @else
+@endforeach
 
 
-        <p class="text-secondary text-center">
 
-            No transport data available
-
-        </p>
+</div>
 
 
-                @endif
 
-            </div>
+@else
 
-    </div>
+
+<div class="text-center text-secondary">
+
+No port data available
+
+</div>
+
+
+@endif
+
+
+
+</div>
 
 </div>
 

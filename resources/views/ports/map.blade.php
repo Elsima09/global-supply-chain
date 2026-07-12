@@ -8,37 +8,47 @@
 
 <div class="card futuristic-card border-0">
 
+
 <div class="card-body">
 
 
+
 <h2 class="text-info fw-bold mb-4">
-🗺 Global Port Monitoring
+
+🗺 Global Port Risk Monitoring
+
 </h2>
 
 
+
 <div id="portMap"
+
 style="
 height:650px;
 border-radius:20px;
 overflow:hidden;
 ">
+
 </div>
 
 
-<div style="
-margin-top:15px;
-color:white;
-font-size:16px;
-">
 
-🟢 Low Risk &nbsp;&nbsp;
-🟡 Medium Risk &nbsp;&nbsp;
+<div class="mt-3 text-white">
+
+🟢 Low Risk
+&nbsp;&nbsp;
+
+🟡 Medium Risk
+&nbsp;&nbsp;
+
 🔴 High Risk
 
 </div>
 
 
+
 </div>
+
 
 </div>
 
@@ -53,6 +63,7 @@ font-size:16px;
 
 
 
+
 <script>
 
 
@@ -61,10 +72,16 @@ setTimeout(function(){
 
 
 var map = L.map('portMap')
+
 .setView(
+
 [20,0],
+
 2
+
 );
+
+
 
 
 
@@ -78,7 +95,10 @@ attribution:'© OpenStreetMap'
 
 }
 
-).addTo(map);
+)
+
+.addTo(map);
+
 
 
 
@@ -88,35 +108,42 @@ attribution:'© OpenStreetMap'
 @foreach($ports as $port)
 
 
+
 @php
 
-$risk = $port->country?->riskScore?->total_score ?? 0;
 
-$level = $port->country?->riskScore?->risk_level ?? 'Unknown';
+$risk = $port->transport_risk ?? 0;
+
+
+
+if($risk >= 70){
+
+$level = "High";
+
+$color = "#ef4444";
+
+}
+
+elseif($risk >=40){
+
+$level = "Medium";
+
+$color = "#eab308";
+
+}
+
+else{
+
+$level = "Low";
+
+$color = "#22c55e";
+
+}
+
+
 
 @endphp
 
-
-
-var risk = {{ $risk }};
-
-
-
-var color="#22c55e";
-
-
-
-if(risk >=70){
-
-color="#ef4444";
-
-}
-
-else if(risk >=40){
-
-color="#eab308";
-
-}
 
 
 
@@ -136,11 +163,15 @@ L.circleMarker(
 
 radius:14,
 
-fillColor:color,
+
+fillColor:"{{ $color }}",
+
 
 color:"#ffffff",
 
+
 weight:2,
+
 
 fillOpacity:0.9
 
@@ -148,6 +179,7 @@ fillOpacity:0.9
 }
 
 )
+
 
 .addTo(map)
 
@@ -157,41 +189,96 @@ fillOpacity:0.9
 
 `
 
-<b>🚢 {{ $port->port_name }}</b>
+<div style="min-width:220px">
+
+
+<h5>
+
+🚢 {{ $port->port_name }}
+
+</h5>
+
+
+
+<hr>
+
+
+
+🌎 Country:
+
 <br>
 
-Country :
+<b>
+
 {{ $port->country->name ?? '-' }}
 
-<br>
+</b>
 
-AI Risk Score :
-<b>${risk}</b>
 
-<br>
 
-Risk Level :
-<b>{{ $level }}</b>
+<br><br>
 
-<br>
 
-Status :
-{{ $port->status }}
+
+🤖 AI Logistics Risk:
 
 <br>
 
-Delay :
-{{ $port->delay_hours ?? 0 }} Hours
+<b>
+
+{{ $risk }}
+
+</b>
+
+
+
+<br><br>
+
+
+
+Risk Level:
 
 <br>
 
-Capacity :
-{{ $port->capacity ?? 0 }}%
+<span>
+
+{{ $level }}
+
+</span>
+
+
+
+<br><br>
+
+
+
+Status:
 
 <br>
 
-Congestion :
-{{ $port->congestion ?? 'Low' }}
+<b>
+
+{{ ucfirst($port->status) }}
+
+</b>
+
+
+
+<br><br>
+
+
+
+📍 Location:
+
+<br>
+
+{{ $port->latitude }},
+
+{{ $port->longitude }}
+
+
+
+</div>
 
 `
 
@@ -200,6 +287,7 @@ Congestion :
 
 
 @endforeach
+
 
 
 
@@ -218,6 +306,7 @@ map.invalidateSize();
 
 
 </script>
+
 
 
 @endsection
