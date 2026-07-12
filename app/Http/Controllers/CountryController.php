@@ -214,10 +214,9 @@ elseif($gdp < 500000000000){
 $economicScore = min($economicScore,100);
 
 $ports = Port::where(
-    'country',
-    $selectedCountry->name
+    'country_id',
+    $country->id
 )->get();
-
 $prediction = $predictionService->predict(
     $ports->pluck('id')->toArray()
 );
