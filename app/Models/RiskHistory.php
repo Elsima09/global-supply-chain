@@ -7,15 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class RiskHistory extends Model
 {
 
-    protected $fillable = [
+protected $fillable = [
 
-        'country_id',
+    'country_id',
+    'risk_score',
+    'risk_level',
+    'recorded_at'
 
-        'risk_score',
-
-        'recorded_at'
-
-    ];
+];
 
 
 

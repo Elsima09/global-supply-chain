@@ -37,6 +37,8 @@ RiskScore::updateOrCreate(
 
     'risk_score' => $data['total_score'],
 
+    'risk_level' => $data['risk_level'],
+
     'recorded_at' => now()
 
 ]);
