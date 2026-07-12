@@ -2,237 +2,386 @@
 
 namespace App\Services;
 
-
 use App\Models\WeatherData;
-use App\Models\Country;
+use App\Models\EconomicData;
 use App\Models\ExchangeRate;
 use App\Models\SentimentResult;
+use App\Models\Country;
 use App\Services\LogisticsRiskService;
+
 
 class RiskService
 {
-public function calculate(
-    $weather,
-    $economic,
-    $currency,
-    $sentiment,
-    $logistics
-)
-{
 
-    $score =
-        ($weather * 0.25) +
-        ($economic * 0.20) +
-        ($currency * 0.15) +
-        ($sentiment * 0.15) +
-        ($logistics * 0.25);
+    public function calculate(
+        $weather,
+        $economic,
+        $currency,
+        $sentiment,
+        $logistics
+    ){
 
-    return round($score, 2);
-}
+        $score =
+            ($weather * 0.25) +
+            ($economic * 0.20) +
+            ($currency * 0.15) +
+            ($sentiment * 0.15) +
+            ($logistics * 0.25);
 
-public function level($score)
-{
-    if($score >= 60){
-        return "High";
+
+        return round($score);
+
     }
 
-    if($score >= 35){
-        return "Medium";
+
+
+    public function level($score)
+    {
+
+        if($score >= 60){
+            return "High";
+        }
+
+
+        if($score >= 35){
+            return "Medium";
+        }
+
+
+        return "Low";
+
     }
 
-    return "Low";
-}
-
-    public function calculateAll()
-{
-    $weatherRisk = WeatherData::avg('storm_risk');
 
 
-if($weatherRisk === null){
 
-    $weatherRisk = 50;
+    public function calculateByCountry($country)
+    {
 
-}
 
-    $inflationRisk = Country::avg('inflation_rate') ?? 5;
+        /*
+        |--------------------------------------------------------------------------
+        | WEATHER RISK
+        |--------------------------------------------------------------------------
+        */
 
-    $newsRisk = SentimentResult::where(
-        'sentiment',
-        'Negative'
-    )->count() * 10;
 
-    $newsRisk = min($newsRisk, 100);
+        $weather = WeatherData::where(
+            'country_id',
+            $country->id
+        )
+        ->latest()
+        ->first();
 
-    $idrRate = ExchangeRate::where(
-        'currency_code',
-        'IDR'
-    )->value('rate') ?? 0;
 
-    if ($idrRate > 16000) {
-        $currencyRisk = 80;
-    } elseif ($idrRate > 15000) {
-        $currencyRisk = 60;
-    } elseif ($idrRate > 10000) {
-        $currencyRisk = 40;
-    } else {
-        $currencyRisk = 20;
+
+        if($weather){
+
+            $weatherRisk = $weather->storm_risk;
+
+        }else{
+
+            // default jika belum ada data cuaca
+            $weatherRisk = 40;
+
+        }
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | ECONOMIC RISK
+        |--------------------------------------------------------------------------
+        */
+
+
+        $economic = EconomicData::where(
+            'country_id',
+            $country->id
+        )
+        ->latest('year')
+        ->first();
+
+
+
+        if($economic){
+
+
+            $gdp = $economic->gdp ?? 0;
+
+            $inflation = $economic->inflation ?? 0;
+
+            $export = $economic->exports ?? 0;
+
+            $import = $economic->imports ?? 0;
+
+
+
+            /*
+            GDP
+            */
+
+            if($gdp >= 10000000000000){
+
+                $gdpScore = 10;
+
+            }
+            elseif($gdp >= 1000000000000){
+
+                $gdpScore = 20;
+
+            }
+            elseif($gdp >= 100000000000){
+
+                $gdpScore = 40;
+
+            }
+            else{
+
+                $gdpScore = 70;
+
+            }
+
+
+
+            /*
+            Inflation
+            */
+
+
+            if($inflation >= 10){
+
+                $inflationScore = 90;
+
+            }
+            elseif($inflation >= 5){
+
+                $inflationScore = 60;
+
+            }
+            elseif($inflation >= 3){
+
+                $inflationScore = 40;
+
+            }
+            else{
+
+                $inflationScore = 20;
+
+            }
+
+
+
+            /*
+            Trade Balance
+            */
+
+
+            $trade = $export - $import;
+
+
+
+            if($trade > 0){
+
+                $tradeScore = 20;
+
+            }
+            else{
+
+                $tradeScore = 60;
+
+            }
+
+
+
+            $economicScore = round(
+                ($gdpScore + $inflationScore + $tradeScore) / 3
+            );
+
+
+
+        }else{
+
+
+            $economicScore = 70;
+
+        }
+
+
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CURRENCY RISK
+        |--------------------------------------------------------------------------
+        */
+
+
+        $rate = ExchangeRate::where(
+            'currency_code',
+            $country->currency_code
+        )
+        ->value('rate');
+
+
+
+        if(!$rate){
+
+            $currencyRisk = 50;
+
+        }
+        else{
+
+
+            /*
+            semakin tinggi rate
+            semakin besar risiko
+            */
+
+            if($rate >= 10000){
+
+                $currencyRisk = 80;
+
+            }
+            elseif($rate >= 1000){
+
+                $currencyRisk = 50;
+
+            }
+            elseif($rate >= 100){
+
+                $currencyRisk = 30;
+
+            }
+            else{
+
+                $currencyRisk = 20;
+
+            }
+
+        }
+
+
+
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | NEWS / SENTIMENT
+        |--------------------------------------------------------------------------
+        */
+
+
+        $negative = SentimentResult::where(
+            'country_id',
+            $country->id
+        )
+        ->where(
+            'sentiment',
+            'Negative'
+        )
+        ->count();
+
+
+
+        $total = SentimentResult::where(
+            'country_id',
+            $country->id
+        )
+        ->count();
+
+
+
+        if($total > 0){
+
+
+            $newsRisk = round(
+                ($negative/$total)*100
+            );
+
+
+        }
+        else{
+
+
+            // belum ada berita
+            $newsRisk = 30;
+
+
+        }
+
+
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | LOGISTICS
+        |--------------------------------------------------------------------------
+        */
+
+
+        $logisticsRisk = app(
+            LogisticsRiskService::class
+        )
+        ->calculate($country);
+
+
+
+
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | TOTAL RISK
+        |--------------------------------------------------------------------------
+        */
+
+
+        $totalScore = $this->calculate(
+            $weatherRisk,
+            $economicScore,
+            $currencyRisk,
+            $newsRisk,
+            $logisticsRisk
+        );
+
+
+
+        return [
+
+
+            'weather_score'=>round($weatherRisk),
+
+
+            'economic_score'=>round($economicScore),
+
+
+            'inflation_score'=>round($inflationScore ?? 0),
+
+
+            'currency_score'=>round($currencyRisk),
+
+
+            'news_score'=>round($newsRisk),
+
+
+            'logistics_score'=>round($logisticsRisk),
+
+
+            'total_score'=>$totalScore,
+
+
+            'risk_level'=>$this->level($totalScore)
+
+        ];
+
     }
 
- $riskScore = $this->calculate(
-    $weatherRisk,
-    $inflationRisk,
-    $currencyRisk,
-    $newsRisk,
-    50
-);
-
-    $riskLevel = $this->level($riskScore);
-
-    return [
-        'weatherRisk' => $weatherRisk,
-        'inflationRisk' => $inflationRisk,
-        'currencyRisk' => $currencyRisk,
-        'newsRisk' => $newsRisk,
-        'riskScore' => $riskScore,
-        'riskLevel' => $riskLevel
-    ];
-}
-
-public function calculateByCountry($country)
-{
-$weatherRisk = WeatherData::where(
-    'country_id',
-    $country->id
-)
-->orderByDesc('created_at')
-->value('storm_risk');
 
 
-if($weatherRisk === null){
 
-    $weatherRisk = 30;
-
-}
-
-    $inflation = $country->inflation_rate ?? 5;
-
-
-// normalisasi inflasi menjadi 0-100
-
-if($inflation >= 10){
-
-    $inflationRisk = 100;
-
-}elseif($inflation >= 7){
-
-    $inflationRisk = 80;
-
-}elseif($inflation >= 5){
-
-    $inflationRisk = 60;
-
-}elseif($inflation >= 3){
-
-    $inflationRisk = 40;
-
-}else{
-
-    $inflationRisk = 20;
-
-}
-
-$economicScore = $inflationRisk;
-
-
-$gdp = $country->gdp ?? 0;
-
-
-if($gdp < 100000000000){
-
-    $economicScore += 40;
-
-}
-elseif($gdp < 500000000000){
-
-    $economicScore += 20;
-
-}
-
-$economicScore = min($economicScore,100);
-
-$totalNews = SentimentResult::count();
-
-
-$negativeNews = SentimentResult::where(
-    'sentiment',
-    'Negative'
-)->count();
-
-
-if($totalNews > 0){
-
-    $newsRisk = ($negativeNews / $totalNews) * 100;
-
-}else{
-
-    $newsRisk = 20;
-
-}
-
-
-$newsRisk = round($newsRisk);
-
-    $rate = ExchangeRate::where(
-        'currency_code',
-        $country->currency_code
-    )->value('rate') ?? 1;
-
-    if($rate > 15000){
-
-    $currencyRisk = 80;
-
-}elseif($rate > 10000){
-
-    $currencyRisk = 60;
-
-}elseif($rate > 5000){
-
-    $currencyRisk = 40;
-
-}else{
-
-    $currencyRisk = 20;
-
-}
-$logisticsRisk = app(LogisticsRiskService::class)
-    ->calculate($country);
-
-    $riskScore = $this->calculate(
-    $weatherRisk,
-    $economicScore,
-    $currencyRisk,
-    $newsRisk,
-    $logisticsRisk
-);
-
-    return [
-
-    'weather_score'   => round($weatherRisk),
-
-    'economic_score'  => round($economicScore),
-
-    'inflation_score' => round($inflationRisk),
-
-    'currency_score'  => round($currencyRisk),
-
-    'news_score'      => round($newsRisk),
-
-    'logistics_score' => round($logisticsRisk),
-
-    'total_score'     => round($riskScore),
-
-    'risk_level'      => $this->level($riskScore)
-
-];
-}
 }
