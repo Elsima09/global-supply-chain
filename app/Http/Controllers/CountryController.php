@@ -215,7 +215,7 @@ $economicScore = min($economicScore,100);
 
 $ports = Port::where(
     'country_id',
-    $country->id
+    $selectedCountry->id
 )->get();
 $prediction = $predictionService->predict(
     $ports->pluck('id')->toArray()
@@ -226,8 +226,8 @@ $history = \App\Models\TransportHistory::whereHas(
     function($query) use ($selectedCountry){
 
         $query->where(
-            'country',
-            $selectedCountry->name
+            'country_id',
+            $selectedCountry->id
         );
 
     }
