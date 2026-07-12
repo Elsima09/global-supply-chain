@@ -104,7 +104,11 @@ class ComparisonController extends Controller
 
 
 
-
+dd([
+    'gdpTrend'=>$gdpTrend,
+    'currencyTrend'=>$currencyTrend,
+    'riskTrend'=>$riskTrend
+]);
 
 
         return view(
