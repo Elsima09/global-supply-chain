@@ -196,7 +196,7 @@ else{
 
 <td>
 
-🌎 {{ $port->country ?? '-' }}
+🌎 {{ $port->country->name ?? '-' }}
 
 </td>
 
@@ -416,7 +416,7 @@ fillOpacity:.9
 <br>
 
 🌎 Country :
-{{ $port->country ?? '-' }}
+{{ $port->country->name ?? '-' }}
 
 <br>
 
