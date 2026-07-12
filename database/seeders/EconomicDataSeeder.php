@@ -25,11 +25,30 @@ class EconomicDataSeeder extends Seeder
 
         $iso3 = [];
 
+
         foreach($library->all() as $item){
 
             $iso3[$item['alpha2']] = $item['alpha3'];
 
         }
+
+
+
+        $skipCountries = [
+
+            'HM',
+            'TF',
+            'GU',
+            'GF',
+            'GI',
+            'UM',
+            'PN',
+            'TK',
+            'NU',
+            'WF',
+            'BV'
+
+        ];
 
 
 
@@ -40,36 +59,44 @@ class EconomicDataSeeder extends Seeder
         foreach($countries as $country)
         {
 
-        if(
-in_array($country->code, [
 
-'HM',
-'TF',
-'GU',
-'GF',
-'GI',
-'UM',
-'PN',
-'TK',
-'NU',
-'WF',
-'BV'
+            echo "\nProcessing : {$country->name}\n";
 
-])
-){
 
-echo "Skip {$country->name}\n";
 
-continue;
+            /*
+            |--------------------------------------------------------------------------
+            | SKIP SMALL TERRITORIES
+            |--------------------------------------------------------------------------
+            */
 
-}
+
+            if(in_array($country->code,$skipCountries)){
+
+
+                echo "Skipped territory\n";
+
+                continue;
+
+            }
+
+
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | CHECK ISO
+            |--------------------------------------------------------------------------
+            */
 
 
             if(!isset($iso3[$country->code])){
 
-                echo "Skip ISO {$country->name}\n";
+
+                echo "Skipped ISO\n";
 
                 continue;
+
 
             }
 
@@ -82,11 +109,8 @@ continue;
             try {
 
 
-                /*
-                |--------------------------------------------------------------------------
-                | GDP
-                |--------------------------------------------------------------------------
-                */
+
+                echo "GDP...\n";
 
 
                 $gdp = $this->getIndicator(
@@ -96,11 +120,7 @@ continue;
 
 
 
-                /*
-                |--------------------------------------------------------------------------
-                | INFLATION
-                |--------------------------------------------------------------------------
-                */
+                echo "Inflation...\n";
 
 
                 $inflation = $this->getIndicator(
@@ -110,11 +130,7 @@ continue;
 
 
 
-                /*
-                |--------------------------------------------------------------------------
-                | EXPORT
-                |--------------------------------------------------------------------------
-                */
+                echo "Export...\n";
 
 
                 $exports = $this->getIndicator(
@@ -124,11 +140,7 @@ continue;
 
 
 
-                /*
-                |--------------------------------------------------------------------------
-                | IMPORT
-                |--------------------------------------------------------------------------
-                */
+                echo "Import...\n";
 
 
                 $imports = $this->getIndicator(
@@ -146,39 +158,20 @@ continue;
                 */
 
 
-                if($gdp === null){
+                $gdp = $gdp ?? 0;
 
-                    $gdp = 0;
+                $inflation = $inflation ?? 0;
 
-                }
+                $exports = $exports ?? 0;
 
-
-                if($inflation === null){
-
-                    $inflation = 0;
-
-                }
-
-
-                if($exports === null){
-
-                    $exports = 0;
-
-                }
-
-
-                if($imports === null){
-
-                    $imports = 0;
-
-                }
+                $imports = $imports ?? 0;
 
 
 
 
                 /*
                 |--------------------------------------------------------------------------
-                | SAVE DATA
+                | SAVE
                 |--------------------------------------------------------------------------
                 */
 
@@ -192,7 +185,6 @@ continue;
                         'year'=>2025
 
                     ],
-
 
                     [
 
@@ -210,28 +202,59 @@ continue;
 
 
 
-                echo "Inserted {$country->name}\n";
+                echo "SUCCESS {$country->name}\n";
 
 
 
             }
 
+            catch(\Throwable $e){
 
-            catch(\Exception $e){
+
+                echo "FAILED {$country->name} : ".$e->getMessage()."\n";
 
 
-                echo "Failed {$country->name}: ".$e->getMessage()."\n";
+                /*
+                tetap insert kosong
+                */
+
+                EconomicData::updateOrCreate(
+
+                    [
+
+                        'country_id'=>$country->id,
+
+                        'year'=>2025
+
+                    ],
+
+                    [
+
+                        'gdp'=>0,
+
+                        'inflation'=>0,
+
+                        'exports'=>0,
+
+                        'imports'=>0
+
+                    ]
+
+                );
 
 
             }
-
 
 
         }
 
 
 
+        echo "\nEconomic Data Finished\n";
+
+
     }
+
 
 
 
@@ -243,59 +266,94 @@ continue;
     */
 
 
-private function getIndicator($country,$indicator)
-{
-
-    $cacheKey = "worldbank_{$country}_{$indicator}";
+    private function getIndicator($country,$indicator)
+    {
 
 
-    return Cache::remember(
-        $cacheKey,
-        now()->addHours(12),
-        function() use ($country,$indicator){
-
-
-            try {
-
-
-                $response = Http::timeout(8)
-                    ->get(
-                        "https://api.worldbank.org/v2/country/{$country}/indicator/{$indicator}?format=json"
-                    );
-
-
-                $data = $response->json();
+        $cacheKey = "worldbank_{$country}_{$indicator}";
 
 
 
-                if(!isset($data[1])){
+        return Cache::remember(
 
-                    return 0;
+            $cacheKey,
 
-                }
-
-
-
-                foreach($data[1] as $item){
+            now()->addHours(24),
 
 
-                    if(
-                        isset($item['value'])
-                        &&
-                        $item['value'] !== null
-                    ){
+            function() use ($country,$indicator){
 
-                        return $item['value'];
+
+                try {
+
+
+
+                    $response = Http::connectTimeout(3)
+                        ->timeout(5)
+                        ->get(
+
+                            "https://api.worldbank.org/v2/country/{$country}/indicator/{$indicator}?format=json"
+
+                        );
+
+
+
+
+                    if(!$response->successful()){
+
+                        return 0;
 
                     }
 
 
+
+                    $data = $response->json();
+
+
+
+                    if(!isset($data[1])){
+
+                        return 0;
+
+                    }
+
+
+
+
+                    foreach($data[1] as $item){
+
+
+
+                        if(
+
+                            isset($item['value'])
+
+                            &&
+
+                            $item['value'] !== null
+
+                        ){
+
+                            return $item['value'];
+
+                        }
+
+
+                    }
+
+
+
                 }
 
 
+                catch(\Throwable $e){
 
-            }
-            catch(\Exception $e){
+
+                    return 0;
+
+
+                }
+
 
 
                 return 0;
@@ -304,14 +362,11 @@ private function getIndicator($country,$indicator)
             }
 
 
+        );
 
-            return 0;
 
+    }
 
-        }
-    );
-
-}
 
 
 }
