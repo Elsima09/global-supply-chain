@@ -219,54 +219,59 @@ class EconomicDataSeeder extends Seeder
 
 
     private function getIndicator($country,$indicator)
-    {
+{
 
-        try {
-
-
-            $response = Http::timeout(60)
-                ->retry(3,2000)
-                ->get(
-
-                    "https://api.worldbank.org/v2/country/{$country}/indicator/{$indicator}?format=json"
-
-                );
+    try {
 
 
+        $response = Http::timeout(60)
+            ->retry(3,2000)
+            ->get(
+                "https://api.worldbank.org/v2/country/{$country}/indicator/{$indicator}?format=json"
+            );
 
-            $data = $response->json();
 
+        $data = $response->json();
+
+
+
+        if(!isset($data[1])){
+
+            return null;
+
+        }
+
+
+
+        foreach($data[1] as $item){
 
 
             if(
-                isset($data[1][0]['value'])
-                &&
-                $data[1][0]['value'] !== null
+                isset($item['value']) &&
+                $item['value'] !== null
             ){
 
-                return $data[1][0]['value'];
+                return $item['value'];
 
             }
 
 
-
         }
 
-        catch(\Exception $e){
-
-
-            return null;
-
-
-        }
-
-
-
-        return null;
 
 
     }
+    catch(\Exception $e){
 
+        return null;
+
+    }
+
+
+    return null;
+
+
+}
 
 
 }
