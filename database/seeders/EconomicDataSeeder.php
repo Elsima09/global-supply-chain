@@ -13,9 +13,10 @@ class EconomicDataSeeder extends Seeder
     public function run(): void
     {
 
+
         /*
         |--------------------------------------------------------------------------
-        | ISO 2 -> ISO 3
+        | ISO 2 TO ISO 3
         |--------------------------------------------------------------------------
         */
 
@@ -48,6 +49,7 @@ class EconomicDataSeeder extends Seeder
             }
 
 
+
             $code = $iso3[$country->code];
 
 
@@ -60,6 +62,7 @@ class EconomicDataSeeder extends Seeder
                 | GDP
                 |--------------------------------------------------------------------------
                 */
+
 
                 $gdp = $this->getIndicator(
                     $code,
@@ -74,6 +77,7 @@ class EconomicDataSeeder extends Seeder
                 |--------------------------------------------------------------------------
                 */
 
+
                 $inflation = $this->getIndicator(
                     $code,
                     'FP.CPI.TOTL.ZG'
@@ -87,10 +91,11 @@ class EconomicDataSeeder extends Seeder
                 |--------------------------------------------------------------------------
                 */
 
-$exports = $this->getIndicator(
-    $code,
-    'NE.EXP.GNFS.CD'
-) ?? 0;
+
+                $exports = $this->getIndicator(
+                    $code,
+                    'NE.EXP.GNFS.CD'
+                );
 
 
 
@@ -100,47 +105,79 @@ $exports = $this->getIndicator(
                 |--------------------------------------------------------------------------
                 */
 
-$imports = $this->getIndicator(
-    $code,
-    'NE.IMP.GNFS.CD'
-) ?? 0;
+
+                $imports = $this->getIndicator(
+                    $code,
+                    'NE.IMP.GNFS.CD'
+                );
+
 
 
 
                 /*
                 |--------------------------------------------------------------------------
-                | Jika GDP tidak ada skip
+                | DEFAULT VALUE
                 |--------------------------------------------------------------------------
                 */
 
+
                 if($gdp === null){
 
-                    echo "No GDP {$country->name}\n";
+                    $gdp = 0;
 
-                    continue;
+                }
+
+
+                if($inflation === null){
+
+                    $inflation = 0;
+
+                }
+
+
+                if($exports === null){
+
+                    $exports = 0;
+
+                }
+
+
+                if($imports === null){
+
+                    $imports = 0;
 
                 }
 
 
 
 
+                /*
+                |--------------------------------------------------------------------------
+                | SAVE DATA
+                |--------------------------------------------------------------------------
+                */
+
+
                 EconomicData::updateOrCreate(
 
                     [
+
                         'country_id'=>$country->id,
+
                         'year'=>2025
+
                     ],
 
 
                     [
 
-                        'gdp'=>$gdp ?? 0,
+                        'gdp'=>$gdp,
 
-                        'inflation'=>$inflation ?? 0,
+                        'inflation'=>$inflation,
 
-                        'exports'=>$exports ?? 0,
+                        'exports'=>$exports,
 
-                        'imports'=>$imports ?? 0
+                        'imports'=>$imports
 
                     ]
 
@@ -151,7 +188,9 @@ $imports = $this->getIndicator(
                 echo "Inserted {$country->name}\n";
 
 
+
             }
+
 
             catch(\Exception $e){
 
@@ -162,57 +201,72 @@ $imports = $this->getIndicator(
             }
 
 
+
         }
 
 
+
     }
+
 
 
 
     /*
     |--------------------------------------------------------------------------
-    | GET WORLD BANK INDICATOR
+    | WORLD BANK API
     |--------------------------------------------------------------------------
     */
 
-private function getIndicator($country,$indicator)
-{
 
-    try {
+    private function getIndicator($country,$indicator)
+    {
 
-
-        $response = Http::timeout(10)
-            ->get(
-                "https://api.worldbank.org/v2/country/{$country}/indicator/{$indicator}?format=json"
-            );
+        try {
 
 
-        $data = $response->json();
+            $response = Http::timeout(60)
+                ->retry(3,2000)
+                ->get(
+
+                    "https://api.worldbank.org/v2/country/{$country}/indicator/{$indicator}?format=json"
+
+                );
 
 
 
-        if(
-            isset($data[1][0]['value'])
-            &&
-            $data[1][0]['value'] !== null
-        ){
+            $data = $response->json();
 
-            return $data[1][0]['value'];
+
+
+            if(
+                isset($data[1][0]['value'])
+                &&
+                $data[1][0]['value'] !== null
+            ){
+
+                return $data[1][0]['value'];
+
+            }
+
+
+
+        }
+
+        catch(\Exception $e){
+
+
+            return null;
+
 
         }
 
 
-    }
-    catch(\Exception $e){
 
         return null;
 
+
     }
 
-
-    return null;
-
-}
 
 
 }
