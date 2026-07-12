@@ -207,8 +207,6 @@ Port::updateOrCreate(
 
     'country_id'=>$country->id,
 
-    'country'=>$item['country'],
-
     'latitude'=>$item['lat'],
 
     'longitude'=>$item['lng'],
