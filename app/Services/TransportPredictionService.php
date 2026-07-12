@@ -10,52 +10,62 @@ class TransportPredictionService
     public function predict($portIds)
     {
 
+        /*
+        |--------------------------------------------------------------------------
+        | AMBIL 7 DATA TERAKHIR
+        |--------------------------------------------------------------------------
+        */
 
         $history = TransportHistory::whereIn(
-            'port_id',
-            $portIds
-        )
-        ->orderBy('created_at')
-        ->latest()
-        ->limit(7)
-        ->get()
-        ->reverse();
-
-
-
-if($history->count()==0){
-
-    return [
-
-        'score' => 0,
-
-        'level' => 'Unknown',
-
-        'trend' => 'No Data',
-
-        'forecast' => [0,0,0,0,0,0,0]
-
-    ];
-
-}
-
-
-
-        $scores = $history
-            ->pluck('risk_score')
+                'port_id',
+                $portIds
+            )
+            ->orderByDesc('created_at')
+            ->limit(7)
+            ->get()
+            ->sortBy('created_at')
             ->values();
 
 
 
-        // rata-rata risiko
+        if($history->count()==0){
+
+            return [
+
+                'score'=>0,
+
+                'level'=>'Unknown',
+
+                'trend'=>'No Data',
+
+                'forecast'=>[
+                    0,0,0,0,0,0,0
+                ]
+
+            ];
+
+        }
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | HITUNG SCORE DASAR
+        |--------------------------------------------------------------------------
+        */
+
+
+        $scores = $history
+            ->pluck('risk_score')
+            ->map(fn($value)=>intval($value));
+
+
 
         $average = round(
             $scores->avg()
         );
 
 
-
-        // ambil data awal dan akhir
 
         $first = $scores->first();
 
@@ -67,33 +77,56 @@ if($history->count()==0){
 
 
 
-        if($difference >= 10){
+        /*
+        |--------------------------------------------------------------------------
+        | ANALISIS TREND
+        |--------------------------------------------------------------------------
+        */
 
-            $trend = "Increasing";
 
-            $predictionScore = $average + 10;
+        if($difference > 5){
 
+            $trend="Increasing";
 
         }
-        elseif($difference <= -10){
+        elseif($difference < -5){
 
-            $trend = "Decreasing";
-
-            $predictionScore = $average - 10;
-
+            $trend="Decreasing";
 
         }
         else{
 
-            $trend = "Stable";
-
-            $predictionScore = $average;
+            $trend="Stable";
 
         }
 
 
 
-        // batas nilai
+        /*
+        |--------------------------------------------------------------------------
+        | PREDICTION SCORE
+        |--------------------------------------------------------------------------
+        */
+
+
+        $predictionScore = $average;
+
+
+
+        if($trend=="Increasing"){
+
+            $predictionScore += 10;
+
+        }
+
+
+        elseif($trend=="Decreasing"){
+
+            $predictionScore -= 10;
+
+        }
+
+
 
         $predictionScore = max(
             0,
@@ -106,12 +139,19 @@ if($history->count()==0){
 
 
 
+        /*
+        |--------------------------------------------------------------------------
+        | LEVEL
+        |--------------------------------------------------------------------------
+        */
+
+
         if($predictionScore >=70){
 
             $level="High";
 
         }
-        elseif($predictionScore>=40){
+        elseif($predictionScore >=40){
 
             $level="Medium";
 
@@ -125,52 +165,74 @@ if($history->count()==0){
 
 
 
-$forecast = [];
+        /*
+        |--------------------------------------------------------------------------
+        | FORECAST 7 HARI
+        |--------------------------------------------------------------------------
+        */
 
 
-$current = $predictionScore;
+        $forecast=[];
 
 
-for($i = 1; $i <= 7; $i++){
+        $current=$predictionScore;
 
-    if($trend == "Increasing"){
 
-        $current += 3;
+
+        for($i=1;$i<=7;$i++){
+
+
+            if($trend=="Increasing"){
+
+                $current += rand(2,5);
+
+            }
+
+
+            elseif($trend=="Decreasing"){
+
+                $current -= rand(2,5);
+
+            }
+
+
+            else{
+
+                $current += rand(-2,2);
+
+            }
+
+
+
+            $current=max(
+                0,
+                min(
+                    100,
+                    $current
+                )
+            );
+
+
+            $forecast[]=$current;
+
+
+        }
+
+
+
+
+        return [
+
+            'score'=>$predictionScore,
+
+            'level'=>$level,
+
+            'trend'=>$trend,
+
+            'forecast'=>$forecast
+
+        ];
 
     }
-    elseif($trend == "Decreasing"){
-
-        $current -= 3;
-
-    }
-
-
-    $current = max(
-        0,
-        min(100,$current)
-    );
-
-
-    $forecast[] = $current;
-
-}
-
-
-
-return [
-
-    'score'=>$predictionScore,
-
-    'level'=>$level,
-
-    'trend'=>$trend,
-
-    'forecast'=>$forecast
-
-];
-
-
-    }
-
 
 }
