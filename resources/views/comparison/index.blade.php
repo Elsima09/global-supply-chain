@@ -3,27 +3,31 @@
 @section('content')
 
 <div class="card futuristic-card border-0">
-    <div class="card-body">
+<div class="card-body">
 
-        <h2 class="mb-4" style="color:#38bdf8; text-shadow:0 0 12px #38bdf8;">
-    Country Comparison
+
+<h2 class="mb-4" style="color:#38bdf8;">
+Country Comparison
 </h2>
-        <table class="table table-bordered futuristic-table">
 
-    <thead>
-        <tr>
-            <th>Country</th>
-            <th>GDP</th>
-            <th>Inflation</th>
-            <th>Export</th>
-            <th>Import</th>
-            <th>Weather Score</th>
-            <th>Currency Score</th>
-            <th>News Score</th>
-            <th>Total Score</th>
-            <th>Risk Level</th>
-        </tr>
-    </thead>
+
+<table class="table table-bordered futuristic-table">
+
+<thead>
+<tr>
+<th>Country</th>
+<th>GDP</th>
+<th>Inflation</th>
+<th>Export</th>
+<th>Import</th>
+<th>Weather Score</th>
+<th>Currency Score</th>
+<th>News Score</th>
+<th>Total Score</th>
+<th>Risk Level</th>
+</tr>
+</thead>
+
 
 <tbody>
 
@@ -47,36 +51,28 @@ ${{ number_format($risk->country->economic->gdp ?? 0,0) }}
 
 
 <td>
-
-@if(($risk->country->economic->exports ?? 0) > 0)
+@if(($risk->country->economic->exports ?? 0)>0)
 
 ${{ number_format($risk->country->economic->exports,0) }}
 
 @else
 
-<span style="color:#64748b">
 No Data
-</span>
 
 @endif
-
 </td>
 
 
 <td>
-
-@if(($risk->country->economic->imports ?? 0) > 0)
+@if(($risk->country->economic->imports ?? 0)>0)
 
 ${{ number_format($risk->country->economic->imports,0) }}
 
 @else
 
-<span style="color:#64748b">
 No Data
-</span>
 
 @endif
-
 </td>
 
 
@@ -102,13 +98,13 @@ No Data
 
 <td>
 
-@if($risk->risk_level == 'High')
+@if($risk->risk_level=="High")
 
 <span class="badge bg-danger">
 High
 </span>
 
-@elseif($risk->risk_level == 'Medium')
+@elseif($risk->risk_level=="Medium")
 
 <span class="badge bg-warning">
 Medium
@@ -122,12 +118,10 @@ Low
 
 @endif
 
-
 </td>
 
 
 </tr>
-
 
 @endforeach
 
@@ -136,65 +130,172 @@ Low
 
 </table>
 
-    </div>
+
 </div>
+</div>
+
+
+
+
+{{-- CHART AREA --}}
+
+
+@php
+
+$gdpYears = $gdpTrend->pluck('year');
+
+$gdpValues = $gdpTrend->map(function($item){
+
+return round($item->gdp / 1000000000,2);
+
+});
+
+
+$inflationValues = $gdpTrend->pluck('inflation');
+
+
+$currencyYears = $currencyTrend->map(function($item){
+
+return $item->created_at->format('Y');
+
+});
+
+
+$currencyValues = $currencyTrend->pluck('rate');
+
+
+$riskYears = $riskTrend->map(function($item){
+
+return \Carbon\Carbon::parse($item->recorded_at)->format('Y');
+
+});
+
+
+$riskValues = $riskTrend->pluck('risk_score');
+
+
+@endphp
+
+
+
+
 
 <div class="card futuristic-card border-0 mt-4">
-    <div class="card-body">
-        <h4>Risk Comparison Chart</h4>
 
-        <div style="width:100%; height:350px;">
-    <canvas id="comparisonChart"></canvas>
+<div class="card-body">
+
+<h4>
+Risk Comparison Chart
+</h4>
+
+<div style="height:350px">
+
+<canvas id="comparisonChart"></canvas>
+
 </div>
-    </div>
+
 </div>
+
+</div>
+
+
+
+
 
 <div class="card futuristic-card border-0 mt-4">
-    <div class="card-body">
-        <h4 style="color:#38bdf8; text-shadow:0 0 10px #38bdf8;">
-            GDP Comparison Chart
-        </h4>
-        <div style="width:100%; height:350px;">
-    <canvas id="gdpChart"></canvas>
+
+<div class="card-body">
+
+<h4>
+GDP Comparison Chart
+</h4>
+
+
+<div style="height:350px">
+
+<canvas id="gdpChart"></canvas>
+
 </div>
-    </div>
+
+
 </div>
+
+</div>
+
+
+
+
 
 <div class="card futuristic-card border-0 mt-4">
-    <div class="card-body">
-        <h4 style="color:#38bdf8; text-shadow:0 0 10px #38bdf8;">
-            Inflation Trend Chart
-        </h4>
 
-        <div style="width:100%; height:350px;">
-            <canvas id="inflationChart"></canvas>
-        </div>
-    </div>
+<div class="card-body">
+
+<h4>
+Inflation Trend Chart
+</h4>
+
+
+<div style="height:350px">
+
+<canvas id="inflationChart"></canvas>
+
 </div>
+
+</div>
+
+</div>
+
+
+
+
 
 <div class="card futuristic-card border-0 mt-4">
-    <div class="card-body">
-        <h4 style="color:#38bdf8; text-shadow:0 0 10px #38bdf8;">
-            Currency Trend Chart
-        </h4>
 
-        <div style="width:100%; height:350px;">
-            <canvas id="currencyChart"></canvas>
-        </div>
-    </div>
+<div class="card-body">
+
+<h4>
+Currency Trend Chart
+</h4>
+
+
+<div style="height:350px">
+
+<canvas id="currencyChart"></canvas>
+
 </div>
+
+
+</div>
+
+</div>
+
+
+
+
 
 <div class="card futuristic-card border-0 mt-4">
-    <div class="card-body">
-        <h4 style="color:#38bdf8; text-shadow:0 0 10px #38bdf8;">
-            Risk Trend Chart
-        </h4>
 
-        <div style="width:100%; height:350px;">
-            <canvas id="riskTrendChart"></canvas>
-        </div>
-    </div>
+<div class="card-body">
+
+<h4>
+Risk Trend Chart
+</h4>
+
+
+<div style="height:350px">
+
+<canvas id="riskTrendChart"></canvas>
+
 </div>
+
+
+</div>
+
+</div>
+
+
+
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -202,44 +303,45 @@ Low
 
 <script>
 
-document.addEventListener('DOMContentLoaded',()=>{
+
+document.addEventListener(
+'DOMContentLoaded',
+function(){
 
 
-// =====================
+
+// =================
 // RISK COMPARISON
-// =====================
+// =================
+
 
 new Chart(
 document.getElementById('comparisonChart'),
 {
 
+
 type:'bar',
+
 
 data:{
 
-labels:[
-@foreach($comparison as $risk)
-'{{ $risk->country->name }}',
-@endforeach
-],
+
+labels:@json(
+$comparison->pluck('country.name')
+),
 
 
 datasets:[{
 
 label:'Risk Score',
 
-data:[
-@foreach($comparison as $risk)
-{{ $risk->total_score }},
-@endforeach
-],
+data:@json(
+$comparison->pluck('total_score')
+),
 
 
-backgroundColor:'rgba(56,189,248,.45)',
-
-borderColor:'#38bdf8',
-
-borderWidth:1
+backgroundColor:
+'rgba(56,189,248,0.5)'
 
 
 }]
@@ -257,20 +359,21 @@ maintainAspectRatio:false
 
 }
 
+
 });
 
 
 
 
-// =====================
-// GDP CHART
-// =====================
+
+
+// =================
+// GDP
+// =================
 
 
 new Chart(
-
 document.getElementById('gdpChart'),
-
 {
 
 
@@ -280,38 +383,21 @@ type:'line',
 data:{
 
 
-labels:[
-
-@foreach($gdpTrend as $item)
-
-'{{ $item->year }}',
-
-@endforeach
-
-],
-
+labels:@json($gdpYears),
 
 
 datasets:[{
 
+label:'GDP Billion USD',
 
-label:'GDP Indonesia (Billion USD)',
 
-
-data:[
-
-@foreach($gdpTrend as $item)
-
-{{ round($item->gdp/1000000000,2) }},
-
-@endforeach
-
-],
+data:@json($gdpValues),
 
 
 borderColor:'#22c55e',
 
-backgroundColor:'rgba(34,197,94,.2)',
+backgroundColor:
+'rgba(34,197,94,.2)',
 
 
 fill:true,
@@ -331,7 +417,6 @@ responsive:true,
 
 maintainAspectRatio:false
 
-
 }
 
 
@@ -340,15 +425,16 @@ maintainAspectRatio:false
 
 
 
-// =====================
-// INFLATION CHART
-// =====================
+
+
+
+// =================
+// INFLATION
+// =================
 
 
 new Chart(
-
 document.getElementById('inflationChart'),
-
 {
 
 
@@ -358,37 +444,21 @@ type:'line',
 data:{
 
 
-labels:[
-
-@foreach($gdpTrend as $item)
-
-'{{ $item->year }}',
-
-@endforeach
-
-],
+labels:@json($gdpYears),
 
 
 datasets:[{
 
+label:'Inflation %',
 
-label:'Inflation (%)',
 
-
-data:[
-
-@foreach($gdpTrend as $item)
-
-{{ $item->inflation }},
-
-@endforeach
-
-],
+data:@json($inflationValues),
 
 
 borderColor:'#f59e0b',
 
-backgroundColor:'rgba(245,158,11,.2)',
+backgroundColor:
+'rgba(245,158,11,.2)',
 
 
 fill:true,
@@ -416,15 +486,16 @@ maintainAspectRatio:false
 
 
 
-// =====================
-// CURRENCY CHART
-// =====================
+
+
+
+// =================
+// CURRENCY
+// =================
 
 
 new Chart(
-
 document.getElementById('currencyChart'),
-
 {
 
 
@@ -434,37 +505,21 @@ type:'line',
 data:{
 
 
-labels:[
-
-@foreach($currencyTrend as $item)
-
-'{{ $item->created_at->format("Y") }}',
-
-@endforeach
-
-],
+labels:@json($currencyYears),
 
 
 datasets:[{
-
 
 label:'USD IDR',
 
 
-data:[
-
-@foreach($currencyTrend as $item)
-
-{{ $item->rate }},
-
-@endforeach
-
-],
+data:@json($currencyValues),
 
 
 borderColor:'#a855f7',
 
-backgroundColor:'rgba(168,85,247,.2)',
+backgroundColor:
+'rgba(168,85,247,.2)',
 
 
 fill:true,
@@ -492,15 +547,16 @@ maintainAspectRatio:false
 
 
 
-// =====================
-// RISK TREND
-// =====================
+
+
+
+// =================
+// RISK HISTORY
+// =================
 
 
 new Chart(
-
 document.getElementById('riskTrendChart'),
-
 {
 
 
@@ -510,37 +566,21 @@ type:'line',
 data:{
 
 
-labels:[
-
-@foreach($riskTrend as $item)
-
-'{{ \Carbon\Carbon::parse($item->recorded_at)->format("Y") }}',
-
-@endforeach
-
-],
+labels:@json($riskYears),
 
 
 datasets:[{
 
-
 label:'Risk History',
 
 
-data:[
-
-@foreach($riskTrend as $item)
-
-{{ $item->risk_score }},
-
-@endforeach
-
-],
+data:@json($riskValues),
 
 
 borderColor:'#ef4444',
 
-backgroundColor:'rgba(239,68,68,.2)',
+backgroundColor:
+'rgba(239,68,68,.2)',
 
 
 fill:true,
@@ -567,9 +607,13 @@ maintainAspectRatio:false
 
 
 
+
+
 });
 
 
+
 </script>
+
 
 @endsection
