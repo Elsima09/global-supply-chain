@@ -70,7 +70,7 @@ box-shadow:0 0 20px rgba(56,189,248,0.15);
 
                     <td>{{ $port->port_name }}</td>
 
-                    <td>{{ $port->country }}</td>
+                    <td>{{ $port->country->name ?? '-' }}</td>
 
                     <td>{{ $port->latitude }}</td>
 
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded',function(){
 
     L.marker([{{ $port->latitude }},{{ $port->longitude }}])
         .addTo(map)
-        .bindPopup("<b>{{ $port->port_name }}</b><br>{{ $port->country }}");
+        .bindPopup("<b>{{ $port->port_name }}</b><br>{{ $port->country->name ?? '-' }}");
 
     @endforeach
 

@@ -2,30 +2,46 @@
 
 namespace App\Services;
 
+
 use App\Models\Port;
+
 
 class LogisticsRiskService
 {
-    public function calculate($country = null)
-    {
 
-        $query = Port::query();
 
-        if($country){
+public function calculate($country=null)
+{
 
-            $query->where('country',$country->name);
 
-        }
+$query=Port::query();
 
-        $average = $query->avg('transport_risk');
 
-        if($average === null){
 
-            return 20;
+if($country)
+{
 
-        }
+$query->where(
+'country_id',
+$country->id
+);
 
-        return round($average);
+}
 
-    }
+
+
+$risk=$query->avg(
+'transport_risk'
+);
+
+
+
+return round(
+$risk ?? 20
+);
+
+
+}
+
+
 }

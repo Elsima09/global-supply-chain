@@ -7,6 +7,7 @@ use App\Models\ExchangeRate;
 use App\Models\ExchangeRateHistory;
 use App\Models\EconomicData;
 use App\Models\RiskScore;
+use App\Models\Port;
 use Illuminate\Database\Eloquent\Model;
 
 class Country extends Model
@@ -97,6 +98,15 @@ class Country extends Model
 {
     return $this->hasOne(EconomicData::class)
         ->latestOfMany('year');
+}
+
+public function ports()
+{
+
+return $this->hasMany(
+Port::class
+);
+
 }
 
 }

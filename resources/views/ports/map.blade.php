@@ -47,70 +47,103 @@ font-size:16px;
 
 
 
+
+
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
 
 
 <script>
 
+
 setTimeout(function(){
 
 
-var map = L.map('portMap').setView(
-    [20,0],
-    2
+
+var map = L.map('portMap')
+.setView(
+[20,0],
+2
 );
 
 
 
 L.tileLayer(
+
 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+
 {
-    attribution:'© OpenStreetMap'
+
+attribution:'© OpenStreetMap'
+
 }
+
 ).addTo(map);
+
+
+
 
 
 
 @foreach($ports as $port)
 
 
-var risk = {{ $port->countryModel->riskScore->total_score ?? 0 }};
+@php
+
+$risk = $port->country?->riskScore?->total_score ?? 0;
+
+$level = $port->country?->riskScore?->risk_level ?? 'Unknown';
+
+@endphp
 
 
-var color = "#22c55e";
+
+var risk = {{ $risk }};
 
 
-if(risk >= 70){
 
-    color="#ef4444";
+var color="#22c55e";
+
+
+
+if(risk >=70){
+
+color="#ef4444";
 
 }
+
 else if(risk >=40){
 
-    color="#eab308";
+color="#eab308";
 
 }
+
 
 
 
 L.circleMarker(
 
 [
+
 {{ $port->latitude }},
+
 {{ $port->longitude }}
+
 ],
 
 {
+
 
 radius:14,
 
 fillColor:color,
 
-color:"#fff",
+color:"#ffffff",
 
 weight:2,
 
 fillOpacity:0.9
+
 
 }
 
@@ -118,22 +151,70 @@ fillOpacity:0.9
 
 .addTo(map)
 
+
+
 .bindPopup(
-"<b>🚢 {{ $port->port_name }}</b><br>" +
-"Country : {{ $port->country }}<br>" +
-"AI Risk Score : <b>" + risk + "</b><br>" +
-"Risk Level : {{ $port->countryModel->riskScore->risk_level ?? 'Unknown' }}"
+
+`
+
+<b>🚢 {{ $port->port_name }}</b>
+<br>
+
+Country :
+{{ $port->country->name ?? '-' }}
+
+<br>
+
+AI Risk Score :
+<b>${risk}</b>
+
+<br>
+
+Risk Level :
+<b>{{ $level }}</b>
+
+<br>
+
+Status :
+{{ $port->status }}
+
+<br>
+
+Delay :
+{{ $port->delay_hours ?? 0 }} Hours
+
+<br>
+
+Capacity :
+{{ $port->capacity ?? 0 }}%
+
+<br>
+
+Congestion :
+{{ $port->congestion ?? 'Low' }}
+
+`
+
 );
+
 
 
 @endforeach
 
 
 
+
+
+setTimeout(()=>{
+
 map.invalidateSize();
+
+},500);
+
 
 
 },500);
+
 
 
 </script>
