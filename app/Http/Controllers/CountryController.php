@@ -138,19 +138,18 @@ if (!$selectedCountry) {
 
 
 
-        $risk = RiskScore::where(
-            'country_id',
-            $selectedCountry->id
-        )
-        ->first();
-
+$riskScore = RiskScore::where(
+    'country_id',
+    $selectedCountry->id
+)
+->first();
         $recommendation = null;
 
-if ($risk) {
+if ($riskScore) {
 
     $recommendation = $recommendationService->generate(
-        $risk->risk_level,
-        $risk->total_score
+        $riskScore->risk_level,
+        $riskScore->total_score
     );
 
 }
@@ -339,7 +338,7 @@ compact(
 
     'weather',
 
-    'risk',
+    'riskScore',
 
     'economicStatus',
 

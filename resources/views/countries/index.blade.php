@@ -317,25 +317,24 @@ AI Logistics Risk Score
 
 @php
 
-$risk =
+$portRisk =
 $port->transport_risk ?? 0;
 
 
 $riskColor="success";
 
 
-if($risk>=70){
+if($portRisk >=70){
 
-$riskColor="danger";
-
-}
-
-elseif($risk>=40){
-
-$riskColor="warning";
+    $riskColor="danger";
 
 }
 
+elseif($portRisk >=40){
+
+    $riskColor="warning";
+
+}
 
 @endphp
 
@@ -343,13 +342,13 @@ $riskColor="warning";
 
 <h1 class="text-{{ $riskColor }} fw-bold">
 
-{{ $risk }}
+{{ $portRisk }}
 
 </h1>
 
 
 
-@if($risk>=70)
+@if($portRisk>=70)
 
 
 <span class="badge bg-danger">
@@ -359,7 +358,7 @@ $riskColor="warning";
 </span>
 
 
-@elseif($risk>=40)
+@elseif($portRisk>=40)
 
 
 <span class="badge bg-warning text-dark">
@@ -390,7 +389,7 @@ $riskColor="warning";
 
 class="progress-bar bg-{{ $riskColor }}"
 
-style="width:{{ $risk }}%">
+style="width:{{ $portRisk }}%">
 
 </div>
 
@@ -744,10 +743,10 @@ $confidence = round(
 
 (
 
-(optional($risk)->weather_score ?? 0 +
-optional($risk)->economic_score ?? 0+
-optional($risk)->news_score ?? 0 +
-optional($risk)->logistics_score ?? 0)
+(optional($riskScore)->weather_score ?? 0 +
+optional($riskScore)->economic_score ?? 0+
+optional($riskScore)->news_score ?? 0 +
+optional($riskScore)->logistics_score ?? 0)
 
 /
 
@@ -802,12 +801,12 @@ Confidence calculated from integrated AI risk analysis.
 
 <div class="d-flex justify-content-between">
 <span>🌦 Weather</span>
-<span>{{ optional($risk)->weather_score ?? 0 }}</span>
+<span>{{ optional($riskScore)->weather_score ?? 0 }}</span>
 </div>
 
 <div class="progress" style="height:10px;">
 <div class="progress-bar bg-info"
-style="width:{{ optional($risk)->weather_score ?? 0 }}%">
+style="width:{{ optional($riskScore)->weather_score ?? 0 }}%">
 </div>
 </div>
 
@@ -818,12 +817,12 @@ style="width:{{ optional($risk)->weather_score ?? 0 }}%">
 
 <div class="d-flex justify-content-between">
 <span>💰 Economy</span>
-<span>{{ optional($risk)->economic_score ?? 0 }}</span>
+<span>{{ optional($riskScore)->economic_score ?? 0 }}</span>
 </div>
 
 <div class="progress" style="height:10px;">
 <div class="progress-bar bg-warning"
-style="width:{{ optional($risk)->economic_score ?? 0 }}%">
+style="width:{{ optional($riskScore)->economic_score ?? 0 }}%">
 </div>
 </div>
 
@@ -834,12 +833,12 @@ style="width:{{ optional($risk)->economic_score ?? 0 }}%">
 
 <div class="d-flex justify-content-between">
 <span>🚢 Logistics</span>
-<span>{{ optional($risk)->logistics_score ?? 0 }}</span>
+<span>{{ optional($riskScore)->logistics_score ?? 0 }}</span>
 </div>
 
 <div class="progress" style="height:10px;">
 <div class="progress-bar bg-success"
-style="width:{{ optional($risk)->logistics_score ?? 0 }}%">
+style="width:{{ optional($riskScore)->logistics_score ?? 0 }}%">
 </div>
 </div>
 
@@ -850,12 +849,12 @@ style="width:{{ optional($risk)->logistics_score ?? 0 }}%">
 
 <div class="d-flex justify-content-between">
 <span>📰 News</span>
-<span>{{ optional($risk)->news_score ?? 0 }}</span>
+<span>{{ optional($riskScore)->news_score ?? 0 }}</span>
 </div>
 
 <div class="progress" style="height:10px;">
 <div class="progress-bar bg-danger"
-style="width:{{ optional($risk)->news_score ?? 0 }}%">
+style="width:{{ optional($riskScore)->news_score ?? 0 }}%">
 </div>
 </div>
 
@@ -932,7 +931,7 @@ Risk Level
 
 <h4 class="text-warning">
 
-{{ $risk->risk_level }}
+{{ $riskScore->risk_level }}
 
 </h4>
 
@@ -1333,13 +1332,13 @@ This recommendation is generated automatically using integrated analysis of weat
                             </small>
 
                             <h3 class="text-warning">
-                                {{ optional($risk)->economic_score ?? 0}}
+                                {{ optional($riskScore)->economic_score ?? 0}}
                             </h3>
                             <div class="progress mt-2">
 
 <div
 class="progress-bar bg-warning"
-style="width:{{ optional($risk)->economic_score ?? 0 }}%">
+style="width:{{ optional($riskScore)->economic_score ?? 0 }}%">
 
 </div>
 
@@ -1356,13 +1355,13 @@ style="width:{{ optional($risk)->economic_score ?? 0 }}%">
                             </small>
 
                             <h3 class="text-success">
-                                {{ optional($risk)->logistics_score ?? 0 }}
+                                {{ optional($riskScore)->logistics_score ?? 0 }}
                             </h3>
                             <div class="progress mt-2">
 
 <div
 class="progress-bar bg-success"
-style="width:{{ optional($risk)->logistics_score ?? 0 }}%">
+style="width:{{ optional($riskScore)->logistics_score ?? 0 }}%">
 
 </div>
 
@@ -1379,14 +1378,14 @@ style="width:{{ optional($risk)->logistics_score ?? 0 }}%">
                             </small>
 
                             <h3 class="text-danger">
-                                {{ optional($risk)->news_score ?? 0 }}
+                                {{ optional($riskScore)->news_score ?? 0 }}
                             </h3>
 
                         <div class="progress mt-2">
 
 <div
 class="progress-bar bg-danger"
-style="width:{{ optional($risk)->news_score ?? 0 }}%">
+style="width:{{ optional($riskScore)->news_score ?? 0 }}%">
 
 </div>
 
@@ -1409,22 +1408,22 @@ style="width:{{ optional($risk)->news_score ?? 0 }}%">
                                         @php
                         $color='success';
 
-                        if(($risk->risk_level ?? '')=='Medium'){
+                        if(($riskScore->risk_level ?? '')=='Medium'){
                             $color='warning';
                         }
 
-                        if(($risk->risk_level ?? '')=='High'){
+                        if(($riskScore->risk_level ?? '')=='High'){
                             $color='danger';
                         }
                     @endphp
 
                     <h1 class="text-{{ $color }} fw-bold">
-                        {{ $risk->total_score ?? 0 }}
+                        {{ $riskScore->total_score ?? 0 }}
                     </h1>
 
                     <span class="badge bg-{{ $color }} fs-6">
 
-                        {{ $risk->risk_level ?? 'Unknown' }}
+                        {{ $riskScore->risk_level ?? 'Unknown' }}
 
                     </span>
 
@@ -1434,9 +1433,9 @@ style="width:{{ optional($risk)->news_score ?? 0 }}%">
 
                     <div
                         class="progress-bar bg-{{ $color }}"
-                        style="width:{{ $risk->total_score ?? 0 }}%">
+                        style="width:{{ $riskScore->total_score ?? 0 }}%">
 
-                        {{ $risk->total_score ?? 0 }}
+                        {{ $riskScore->total_score ?? 0 }}
 
                     </div>
 
@@ -1934,10 +1933,10 @@ options:{
 
                     data:[
 
-                        {{ optional($risk)->weather_score ?? 0 }},
-                        {{ optional($risk)->economic_score ?? 0}},
-                        {{ optional($risk)->logistics_score ?? 0 }},
-                        {{ optional($risk)->news_score ?? 0 }}
+                        {{ optional($riskScore)->weather_score ?? 0 }},
+                        {{ optional($riskScore)->economic_score ?? 0}},
+                        {{ optional($riskScore)->logistics_score ?? 0 }},
+                        {{ optional($riskScore)->news_score ?? 0 }}
 
                     ],
 
