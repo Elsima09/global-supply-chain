@@ -274,23 +274,17 @@ class RiskService
         */
 
 
-        $negative = SentimentResult::where(
-            'country_id',
-            $country->id
-        )
-        ->where(
-            'sentiment',
-            'Negative'
-        )
-        ->count();
+if($total > 0){
 
+    $newsRisk = round(
+        ($negative / $total) * 100
+    );
 
+}else{
 
-        $total = SentimentResult::where(
-            'country_id',
-            $country->id
-        )
-        ->count();
+    $newsRisk = 30;
+
+}
 
 
 
