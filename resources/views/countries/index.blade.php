@@ -1048,11 +1048,11 @@ This recommendation is generated automatically using integrated analysis of weat
                                     GDP
                                 </small>
 
-                                <h5 class="text-info">
+<h5 class="text-info">
 
-                                    ${{ number_format($selectedCountry->gdp,0) }}
+${{ number_format(($economicData->gdp ?? 0) / 1000000000,2) }} B
 
-                                </h5>
+</h5>
 
                             </div>
 
@@ -1086,7 +1086,7 @@ This recommendation is generated automatically using integrated analysis of weat
 
                                 <h5 class="text-warning">
 
-                                    {{ $selectedCountry->inflation_rate }} %
+                                    {{ $economicData->inflation ?? 0 }} %
 
                                 </h5>
 
@@ -1122,7 +1122,7 @@ This recommendation is generated automatically using integrated analysis of weat
 
                                 <h6>
 
-                                    ${{ number_format($selectedCountry->export_value,0) }}
+                                    ${{ number_format(($economicData->exports ?? 0)/1000000000,2) }} B
 
                                 </h6>
 
@@ -1140,7 +1140,7 @@ This recommendation is generated automatically using integrated analysis of weat
 
                                 <h6>
 
-                                    ${{ number_format($selectedCountry->import_value,0) }}
+                                    ${{ number_format(($economicData->imports ?? 0)/1000000000,2) }} B
 
                                 </h6>
 

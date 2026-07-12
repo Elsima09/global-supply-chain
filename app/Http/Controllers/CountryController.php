@@ -135,6 +135,13 @@ if (!$selectedCountry) {
         ->latest()
         ->first();
 
+        $economicData = \App\Models\EconomicData::where(
+    'country_id',
+    $selectedCountry->id
+)
+->latest('year')
+->first();
+
 
 
 
@@ -195,7 +202,7 @@ else{
 
 // GDP
 
-$gdp = $selectedCountry->gdp ?? 0;
+$gdp = $economicData->gdp ?? 0;
 
 
 if($gdp < 100000000000){
@@ -361,7 +368,8 @@ compact(
 'inflationValues',
 
 'riskLabels',
-'riskValues'
+'riskValues',
+'economicData',
 )
         );
 
