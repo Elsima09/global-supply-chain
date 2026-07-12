@@ -4,21 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\RiskScore;
 use App\Models\EconomicData;
-use App\Models\ExchangeRate;
+use App\Models\ExchangeRateHistory;
 use App\Models\RiskHistory;
 use App\Models\Country;
 
+
 class ComparisonController extends Controller
 {
+
     public function index()
     {
 
 
         /*
         |--------------------------------------------------------------------------
-        | Country Comparison
+        | COUNTRY COMPARISON
         |--------------------------------------------------------------------------
         */
+
 
         $comparison = RiskScore::with([
             'country.economic'
@@ -33,11 +36,13 @@ class ComparisonController extends Controller
 
 
 
+
         /*
         |--------------------------------------------------------------------------
-        | FIND INDONESIA ID
+        | FIND INDONESIA
         |--------------------------------------------------------------------------
         */
+
 
         $indonesia = Country::where(
             'name',
@@ -46,14 +51,16 @@ class ComparisonController extends Controller
 
 
 
-        $indonesiaId = $indonesia->id ?? null;
+        $indonesiaId = $indonesia?->id;
+
+
 
 
 
 
         /*
         |--------------------------------------------------------------------------
-        | GDP + Inflation Trend Indonesia
+        | GDP + INFLATION TREND
         |--------------------------------------------------------------------------
         */
 
@@ -62,8 +69,11 @@ class ComparisonController extends Controller
             'country_id',
             $indonesiaId
         )
-        ->orderBy('year')
+        ->orderBy('year','asc')
         ->get();
+
+
+
 
 
 
@@ -71,17 +81,19 @@ class ComparisonController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Currency Trend IDR
+        | CURRENCY TREND IDR
         |--------------------------------------------------------------------------
         */
 
 
-        $currencyTrend = ExchangeRate::where(
+        $currencyTrend = ExchangeRateHistory::where(
             'currency_code',
             'IDR'
         )
-        ->orderBy('created_at')
+        ->orderBy('created_at','asc')
         ->get();
+
+
 
 
 
@@ -90,7 +102,7 @@ class ComparisonController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Risk History Indonesia
+        | RISK TREND
         |--------------------------------------------------------------------------
         */
 
@@ -99,8 +111,12 @@ class ComparisonController extends Controller
             'country_id',
             $indonesiaId
         )
-        ->orderBy('recorded_at')
+        ->orderBy(
+            'recorded_at',
+            'asc'
+        )
         ->get();
+
 
 
 
@@ -117,5 +133,7 @@ class ComparisonController extends Controller
             )
         );
 
+
     }
+
 }
