@@ -145,37 +145,30 @@ box-shadow:0 0 20px rgba(56,189,248,.15);
 
 @php
 
-
-$risk =
-$port->country?->riskScore?->logistics_score ?? 0;
-
+$risk = $port->logistics_score ?? $port->transport_risk ?? 0;
 
 
 if($risk >= 70){
 
-$level="High";
+    $level="High";
 
-$badge="danger";
+    $badge="danger";
 
 }
-
 elseif($risk >=40){
 
-$level="Medium";
+    $level="Medium";
 
-$badge="warning";
+    $badge="warning";
 
 }
-
 else{
 
-$level="Low";
+    $level="Low";
 
-$badge="success";
+    $badge="success";
 
 }
-
-
 
 @endphp
 
@@ -203,7 +196,7 @@ $badge="success";
 
 <td>
 
-🌎 {{ $port->country->name ?? '-' }}
+🌎 {{ $port->country ?? '-' }}
 
 </td>
 
@@ -360,42 +353,29 @@ attribution:'© OpenStreetMap'
 
 @foreach($ports as $port)
 
-
-
 @php
 
-
-@php
-
-$risk =
-$port->transport_risk ?? 0;
-
-@endphp
-
+$risk = $port->logistics_score ?? 0;
 
 
 $color="#22c55e";
 
 
-if($risk>=70){
+if($risk >=70){
 
-$color="#ef4444";
+    $color="#ef4444";
 
 }
-
 elseif($risk>=40){
 
-$color="#eab308";
+    $color="#eab308";
 
 }
-
-
 
 @endphp
 
 
-
-
+@if($port->latitude && $port->longitude)
 
 L.circleMarker(
 
@@ -409,30 +389,22 @@ L.circleMarker(
 
 {
 
-
 radius:12,
-
 
 fillColor:"{{ $color }}",
 
-
 color:"#ffffff",
-
 
 weight:2,
 
-
 fillOpacity:.9
 
-
 }
-
 
 )
 
 
 .addTo(map)
-
 
 
 .bindPopup(
@@ -444,37 +416,30 @@ fillOpacity:.9
 <br>
 
 🌎 Country :
-{{ $port->country->name ?? '-' }}
+{{ $port->country ?? '-' }}
 
 <br>
 
-
 📍 Location :
-
 {{ $port->latitude }},
 {{ $port->longitude }}
 
-
 <br>
-
 
 🤖 AI Logistics Risk :
-
 <b>{{ $risk }}</b>
-
 
 <br>
 
-
 Status :
-
 {{ ucfirst($port->status) }}
-
 
 `
 
 );
 
+
+@endif
 
 
 @endforeach
