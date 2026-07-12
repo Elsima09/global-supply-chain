@@ -147,7 +147,7 @@ box-shadow:0 0 20px rgba(56,189,248,.15);
 
 
 $risk =
-$port->transport_risk ?? 0;
+$port->country?->riskScore?->logistics_score ?? 0;
 
 
 
@@ -365,8 +365,12 @@ attribution:'© OpenStreetMap'
 @php
 
 
+@php
+
 $risk =
 $port->transport_risk ?? 0;
+
+@endphp
 
 
 

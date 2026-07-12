@@ -112,7 +112,7 @@ attribution:'© OpenStreetMap'
 @php
 
 
-$risk = $port->transport_risk ?? 0;
+$risk = $port->country?->riskScore?->logistics_score ?? 0;
 
 
 
