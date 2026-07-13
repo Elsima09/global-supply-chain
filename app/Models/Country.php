@@ -94,10 +94,17 @@ class Country extends Model
     |
     */
 
-    public function economic()
+public function economic()
 {
     return $this->hasOne(EconomicData::class)
         ->latestOfMany('year');
+}
+
+public function latestEconomic()
+{
+    return $this->hasOne(EconomicData::class)
+        ->where('gdp','>',0)
+        ->latest('year');
 }
 
 public function ports()

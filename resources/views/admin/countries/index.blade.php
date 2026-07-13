@@ -75,17 +75,17 @@ onkeyup="this.form.submit()">
 
     </td>
 
-    <td>
+<td>
 
-        ${{ number_format($country->gdp,0) }}
+    ${{ number_format($country->latestEconomic->gdp ?? 0,0) }}
 
-    </td>
+</td>
 
-    <td>
+<td>
 
-        {{ $country->inflation_rate }} %
+    {{ $country->latestEconomic->inflation ?? 0 }} %
 
-    </td>
+</td>
 
     <td>
 

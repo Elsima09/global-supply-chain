@@ -9,7 +9,7 @@ class AdminCountryController extends Controller
 {
     public function index(Request $request)
 {
-    $countries = Country::query();
+    $countries = Country::with('latestEconomic');
 
 
     if($request->search){
@@ -23,7 +23,7 @@ class AdminCountryController extends Controller
     }
 
 
-    $countries = $countries->paginate(10);
+    $countries = $countries->get();
 
 
     return view('admin.countries.index', compact('countries'));
