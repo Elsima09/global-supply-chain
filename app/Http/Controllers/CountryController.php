@@ -305,20 +305,22 @@ else{
 */
 
 // GDP Trend
-$gdpCountries = Country::whereNotNull('gdp')
-    ->where('gdp', '>', 0)
+
+$gdpCountries = EconomicData::with('country')
+    ->whereNotNull('gdp')
     ->orderByDesc('gdp')
-    ->take(10)
+    ->limit(10)
     ->get();
 
+
 $gdpLabels = $gdpCountries
-    ->pluck('name')
-    ->toArray();
+    ->pluck('country.name')
+    ->values();
+
 
 $gdpValues = $gdpCountries
     ->pluck('gdp')
-    ->toArray();
-
+    ->values();
 
 // Inflation Trend
 $inflationCountries = EconomicData::with('country')
