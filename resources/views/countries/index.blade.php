@@ -2024,30 +2024,13 @@ options:{
 
             data:{
 
-                labels:[
-
-                    @foreach($countries as $country)
-
-                        "{{ $country->name }}",
-
-                    @endforeach
-
-                ],
+labels:@json($inflationLabels),
 
                 datasets:[{
 
                     label:'Inflation Rate (%)',
 
-                    data:[
-
-                        @foreach($countries as $country)
-
-                            {{ $country->inflation_rate ?? 0 }},
-
-                        @endforeach
-
-                    ],
-
+data:@json($inflationValues),
                     backgroundColor:'rgba(56,189,248,.55)',
 
                     borderColor:'#38bdf8',

@@ -7,6 +7,7 @@ use App\Models\WeatherData;
 use App\Models\RiskScore;
 use App\Models\Port;
 use App\Models\TransportHistory;
+use App\Models\EconomicData;
 use App\Services\RecommendationService;
 use App\Services\TransportPredictionService;
 
@@ -320,14 +321,21 @@ $gdpValues = $gdpCountries
 
 
 // Inflation Trend
-$inflationCountries = Country::whereNotNull('inflation_rate')
-    ->orderBy('name')
-    ->get();
+$inflationCountries = EconomicData::with('country')
+    ->whereNotNull('inflation')
+    ->latest('year')
+    ->get()
+    ->unique('country_id');
 
-$inflationLabels = $inflationCountries->pluck('name');
 
-$inflationValues = $inflationCountries->pluck('inflation_rate');
+$inflationLabels = $inflationCountries
+    ->pluck('country.name')
+    ->values();
 
+
+$inflationValues = $inflationCountries
+    ->pluck('inflation')
+    ->values();
 
 // Risk Trend
 $riskLabels = RiskScore::with('country')
