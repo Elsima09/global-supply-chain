@@ -496,11 +496,39 @@ line-height:1;
 
 @if($prediction['trend']=="No Data")
 
-    No Data
+<div class="alert alert-secondary">
+
+❔ <b>No Transport Data Available</b>
+
+</div>
+
+
+@elseif($prediction['trend']=="Increasing")
+
+<div class="alert alert-danger">
+
+📈 <b>Risk Increasing</b>
+
+</div>
+
+
+@elseif($prediction['trend']=="Decreasing")
+
+<div class="alert alert-success">
+
+📉 <b>Risk Decreasing</b>
+
+</div>
+
 
 @else
 
-    {{ $prediction['score'] }}
+<div class="alert alert-warning">
+
+➡ <b>Stable Condition</b>
+
+</div>
+
 
 @endif
 
@@ -623,7 +651,16 @@ AI evaluates transport history and predicts future disruption risk.
 
 @php
 
-$health = 100 - $prediction['score'];
+if($prediction['trend']=="No Data"){
+
+    $health = "No Data";
+
+}
+else{
+
+    $health = 100 - $prediction['score'];
+
+}
 
 @endphp
 
@@ -637,7 +674,15 @@ text-shadow:
 0 0 25px rgba(34,197,94,.5);
 ">
 
-{{ $health }}%
+@if($health=="No Data")
+
+    No Data
+
+@else
+
+    {{ $health }}%
+
+@endif
 
 </h1>
 
