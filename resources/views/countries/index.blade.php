@@ -494,7 +494,15 @@ text-shadow:
 line-height:1;
 ">
 
-{{ $prediction['score'] }}
+@if($prediction['trend']=="No Data")
+
+    No Data
+
+@else
+
+    {{ $prediction['score'] }}
+
+@endif
 
 </div>
 
@@ -2342,15 +2350,7 @@ if(gauge){
             datasets:[{
 
                 data:[
-                    @if($prediction['trend']=="No Data")
-
-    No Data
-
-@else
-
-    {{ $prediction['score'] }}
-
-@endif,
+                    {{ $prediction['score'] }},
                     {{ 100 - $prediction['score'] }}
                 ],
 
