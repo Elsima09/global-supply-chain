@@ -228,6 +228,17 @@ $prediction = $predictionService->predict(
     $ports->pluck('id')->toArray()
 );
 
+if($prediction['trend']=="No Data"){
+
+    $prediction['health'] = "No Data";
+
+}
+else{
+
+    $prediction['health'] = 100 - $prediction['score'];
+
+}
+
 $history = \App\Models\TransportHistory::whereHas(
     'port',
     function($query) use ($selectedCountry){

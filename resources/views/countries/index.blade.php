@@ -2342,7 +2342,15 @@ if(gauge){
             datasets:[{
 
                 data:[
-                    {{ $prediction['score'] }},
+                    @if($prediction['trend']=="No Data")
+
+    No Data
+
+@else
+
+    {{ $prediction['score'] }}
+
+@endif,
                     {{ 100 - $prediction['score'] }}
                 ],
 
