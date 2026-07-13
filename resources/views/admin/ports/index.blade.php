@@ -54,7 +54,9 @@
                 <tr>
                     <td>{{ $port->id }}</td>
                     <td>{{ $port->port_name }}</td>
-                    <td>{{ $port->country }}</td>
+                    <td>
+    🌎 {{ $port->country->name ?? '-' }}
+</td>
                     <td>{{ $port->latitude }}</td>
                     <td>{{ $port->longitude }}</td>
                     <td>

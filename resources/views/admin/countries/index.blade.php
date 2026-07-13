@@ -23,11 +23,17 @@
 
     <div class="col-md-4">
 
-        <input
-            type="text"
-            id="searchCountry"
-            class="form-control"
-            placeholder="Search country...">
+<form method="GET" action="{{ route('admin.countries') }}">
+
+<input 
+type="text"
+name="search"
+value="{{ request('search') }}"
+placeholder="Search country..."
+class="form-control"
+onkeyup="this.form.submit()">
+
+</form>
 
     </div>
 

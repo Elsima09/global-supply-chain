@@ -1840,29 +1840,67 @@ style="background:#cd7f32;">
 
 <div class="card futuristic-card border-0 mt-4">
 
-    <div class="card-body text-center">
+<div class="card-body text-center">
 
-        <form
-            action="{{ route('watchlist.store') }}"
-            method="POST">
 
-            @csrf
+@php
 
-            <input
-                type="hidden"
-                name="country_id"
-                value="{{ $selectedCountry->id }}">
+$alreadyWatch =
+auth()->user()
+?->watchlists()
+->where('country_id',$selectedCountry->id)
+->exists();
 
-            <button
-                class="btn btn-info btn-lg w-100">
+@endphp
 
-                ⭐ Add Country to Watchlist
 
-            </button>
 
-        </form>
+@if($alreadyWatch)
 
-    </div>
+
+<button
+class="btn btn-success btn-lg w-100"
+disabled>
+
+✅ Already Added to Watchlist
+
+</button>
+
+
+
+@else
+
+
+<form
+action="{{ route('watchlist.store') }}"
+method="POST">
+
+@csrf
+
+
+<input
+type="hidden"
+name="country_id"
+value="{{ $selectedCountry->id }}">
+
+
+
+<button
+class="btn btn-info btn-lg w-100">
+
+⭐ Add Country to Watchlist
+
+</button>
+
+
+</form>
+
+
+@endif
+
+
+
+</div>
 
 </div>
 

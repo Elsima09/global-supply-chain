@@ -7,11 +7,27 @@ use Illuminate\Http\Request;
 
 class AdminCountryController extends Controller
 {
-    public function index()
-    {
-        $countries = Country::all();
-        return view('admin.countries.index', compact('countries'));
+    public function index(Request $request)
+{
+    $countries = Country::query();
+
+
+    if($request->search){
+
+        $countries->where(
+            'name',
+            'like',
+            '%'.$request->search.'%'
+        );
+
     }
+
+
+    $countries = $countries->paginate(10);
+
+
+    return view('admin.countries.index', compact('countries'));
+}
 
     public function create()
 {
