@@ -482,17 +482,60 @@ No port data available
                 </small>
 
 
-<div
-style="
-font-size:85px;
-font-weight:900;
-color:#38bdf8;
-text-shadow:
-0 0 12px #38bdf8,
-0 0 24px #38bdf8,
-0 0 40px rgba(56,189,248,.6);
-line-height:1;
-">
+@if($prediction['trend']=="No Data")
+
+<div class="alert alert-secondary mt-3">
+
+    ❔ <b>No Transport Data Available</b>
+
+</div>
+
+
+@elseif($prediction['trend']=="Increasing")
+
+<div class="alert alert-danger mt-3">
+
+    📈 <b>Risk Increasing</b>
+
+</div>
+
+
+@elseif($prediction['trend']=="Decreasing")
+
+<div class="alert alert-success mt-3">
+
+    📉 <b>Risk Decreasing</b>
+
+</div>
+
+
+@else
+
+<div class="alert alert-warning mt-3">
+
+    ➡ <b>Stable Condition</b>
+
+</div>
+
+
+@endif
+
+<div class="mt-2">
+
+<span class="badge bg-info px-3 py-2">
+
+AI Predicted Score
+
+</span>
+
+</div>
+
+                <div class="mt-3">
+
+<small class="text-secondary">
+AI Trend Analysis
+</small>
+
 
 @if($prediction['trend']=="No Data")
 
@@ -520,52 +563,6 @@ line-height:1;
 
 </div>
 
-
-@else
-
-<div class="alert alert-warning">
-
-➡ <b>Stable Condition</b>
-
-</div>
-
-
-@endif
-
-</div>
-
-<div class="mt-2">
-
-<span class="badge bg-info px-3 py-2">
-
-AI Predicted Score
-
-</span>
-
-</div>
-
-                <div class="mt-3">
-
-<small class="text-secondary">
-AI Trend Analysis
-</small>
-
-
-@if($prediction['trend']=="Increasing")
-
-<div class="alert alert-danger">
-
-📈 <b>Risk Increasing</b>
-
-</div>
-
-@elseif($prediction['trend']=="Decreasing")
-
-<div class="alert alert-success">
-
-📉 <b>Risk Decreasing</b>
-
-</div>
 
 @else
 
