@@ -9,6 +9,7 @@
 
 
 <style>
+    
     body{
     margin:0;
     font-family: Arial, sans-serif;
@@ -184,11 +185,175 @@ canvas{
 transition:width .8s ease;
 
 }
+
+.hero-banner{
+
+    height:260px;
+
+    position:relative;
+
+    overflow:hidden;
+
+    background:
+    linear-gradient(
+        180deg,
+        rgba(2,6,23,.15),
+        rgba(15,23,42,.85)
+    ),
+    url('{{ asset("images/hero-banner.png") }}');
+
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+
+}
+
+.hero-banner::after{
+
+content:"";
+
+position:absolute;
+
+bottom:0;
+left:0;
+right:0;
+
+height:80px;
+
+background:
+linear-gradient(
+transparent,
+#0f172a
+);
+
+}
+
+.hero-banner::before{
+
+content:"";
+
+position:absolute;
+
+inset:0;
+
+background:
+radial-gradient(
+circle at right,
+transparent,
+rgba(2,6,23,.45)
+);
+
+
+}
+
+
+.hero-overlay{
+
+height:100%;
+
+display:flex;
+
+align-items:center;
+
+padding-left:45px;
+
+}
+
+
+.hero-text h1{
+
+font-size:34px;
+
+line-height:1.2;
+
+font-weight:700;
+
+letter-spacing:.5px;
+
+color:#e2e8f0;
+
+margin-top:10px;
+
+text-shadow:
+0 0 25px rgba(56,189,248,.8);
+
+}
+
+
+.hero-text small{
+
+color:#38bdf8;
+
+font-size:16px;
+
+}
+
+
+.hero-text p{
+
+color:#dbeafe;
+
+font-size:18px;
+
+}
+
+
+.status-online{
+
+display:inline-block;
+
+padding:10px 20px;
+
+border-radius:30px;
+
+background:rgba(34,197,94,.15);
+
+border:1px solid rgba(34,197,94,.4);
+
+color:#86efac;
+
+font-size:14px;
+
+}
+
+.hero-text{
+max-width:650px;
+
+transform:translateY(-10px);
+
+margin-bottom:20px;
+
+animation:
+fadeHero 1s ease;
+
+}
+
+
+@keyframes fadeHero{
+
+from{
+
+opacity:0;
+
+transform:translateY(20px);
+
+}
+
+
+to{
+
+opacity:1;
+
+transform:translateY(0);
+
+}
+
+}
 </style>
 
 </head>
 <body style="
-background: linear-gradient(135deg,#0f172a,#111827,#1e293b);
+background:#0f172a;
 min-height:100vh;
 color:white;
 ">
@@ -281,8 +446,8 @@ box-shadow:0 0 20px rgba(56,189,248,0.15);
         <div style="
 background:rgba(15,23,42,0.95);
 backdrop-filter:blur(16px);
-border-bottom:1px solid rgba(56,189,248,0.35);
-box-shadow:0 0 25px rgba(56,189,248,0.15);
+border-bottom:none;
+box-shadow:none;
 " class="shadow-sm px-4 py-3 d-flex justify-content-between align-items-center">
             <div>
     <h3 style="
@@ -327,13 +492,52 @@ box-shadow:0 0 12px #38bdf8;
             </div>
         </div>
 
-        <!-- Content -->
-        <div class="p-4" style="
-background:rgba(255,255,255,0.02);
-min-height:100vh;
-">
-    @yield('content')
+        <!-- Hero Banner -->
+
+@if(request()->routeIs('dashboard'))
+
+<div class="hero-banner">
+
+    <div class="hero-overlay">
+
+        <div class="hero-content">
+
+            <div class="hero-text">
+
+                <small class="text-info">
+                    Welcome Back,
+                    {{ Auth::user()->name }} 👋
+                </small>
+
+                <h1>
+                    Global Supply Chain AI Dashboard
+                </h1>
+
+<p>
+AI-powered monitoring platform for global logistics,
+ports, weather, currency and supply chain risks.
+</p>
+
+                <span class="status-online">
+                    ● System is running smoothly
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
+
+@endif
+
+<div class="px-4 pb-4">
+
+@yield('content')
+
+</div>
+
 
     </div>
 </div>
